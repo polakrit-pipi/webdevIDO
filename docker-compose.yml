@@ -1,0 +1,97 @@
+services:
+  # ============================================
+  # 1. Database (PostgreSQL)
+  # ============================================
+  postgres:
+    container_name: ideabyido-db
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-idoidentity}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-idoidentity_pass}
+      POSTGRES_DB: ${DB_NAME:-db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - idoidentity-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-idoidentity} -d ${DB_NAME:-db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ============================================
+  # 2. Express.js Backend (API + AdminJS)
+  # ============================================
+  backend:
+    container_name: ideabyido-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-idoidentity}:${DB_PASSWORD:-idoidentity_pass}@postgres:5432/${DB_NAME:-db}?schema=public
+      PORT: 1337
+      HOST: 0.0.0.0
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-DiRtebBIc961b6uGYGdk5A==}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-30d}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@ideabyido.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      SESSION_SECRET: ${SESSION_SECRET:-super-secret-session-key-prod}
+      UPLOAD_DIR: ./public/uploads
+    ports:
+      - "1337:1337"
+    volumes:
+      - uploads-data:/opt/app/public/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - idoidentity-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:1337/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # ============================================
+  # 3. Next.js Frontend
+  # ============================================
+  frontend:
+    container_name: ideabyido-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - idoidentity-network
+
+# ============================================
+# Volumes — Named volumes for persistence
+# ============================================
+volumes:
+  postgres-data:
+    driver: local
+  uploads-data:
+    driver: local
+
+# ============================================
+# Network
+# ============================================
+networks:
+  idoidentity-network:
+    driver: bridge

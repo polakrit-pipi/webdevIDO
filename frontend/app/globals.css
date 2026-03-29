@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Hide scrollbar but allow scrolling */
+
+/* Chrome, Safari, Edge */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* IE & old Edge */
+body {
+  -ms-overflow-style: none;
+}
+
+@layer utilities {
+  .fade-section {
+    @apply opacity-0 translate-y-6 transition-all duration-700 ease-out;
+  }
+
+  .fade-section-visible {
+    @apply opacity-100 translate-y-0;
+  }
+}
