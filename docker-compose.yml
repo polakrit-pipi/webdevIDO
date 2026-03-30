@@ -60,25 +60,26 @@ services:
       start_period: 30s
 
   # ============================================
-  # 3. Next.js Frontend
+  # 4. Next.js Admin Dashboard
   # ============================================
-  frontend:
-    container_name: ideabyido-frontend
+  admin:
+    container_name: ideabyido-admin
     build:
-      context: ./frontend
+      context: ./admin
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+        NEXT_PUBLIC_API_URL: http://localhost:1337
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+      NEXT_PUBLIC_API_URL: http://localhost:1337
     ports:
-      - "3000:3000"
+      - "3001:3001"
     depends_on:
       backend:
         condition: service_healthy
     networks:
       - idoidentity-network
+
 
 # ============================================
 # Volumes — Named volumes for persistence
