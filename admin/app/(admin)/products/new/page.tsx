@@ -2,19 +2,23 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Plus, Trash2, ArrowLeft, Upload } from 'lucide-react';
+import { Plus, Trash2, ArrowLeft, Upload, X } from 'lucide-react';
 import api from '@/lib/api';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
 
 interface Category { id: number; categoryName: string; }
 interface Variant {
   _key: number;
   sku: string; color: string; size: string;
   stockqty: string; pricing: string; salePricing: string;
+  imageUrl: string; // uploaded image URL path e.g. /uploads/xxx.jpg
+  uploading: boolean;
 }
 
 let keyCounter = 0;
 function newVariant(): Variant {
-  return { _key: ++keyCounter, sku: '', color: '', size: '', stockqty: '0', pricing: '0', salePricing: '' };
+  return { _key: ++keyCounter, sku: '', color: '', size: '', stockqty: '0', pricing: '0', salePricing: '', imageUrl: '', uploading: false };
 }
 
 export default function NewProductPage() {
@@ -30,8 +34,30 @@ export default function NewProductPage() {
 
   function setField(k: string, v: any) { setForm(f => ({ ...f, [k]: v })); }
 
-  function setVariant(key: number, k: string, v: string) {
+  function setVariant(key: number, k: string, v: any) {
     setVariants(vs => vs.map(v2 => v2._key === key ? { ...v2, [k]: v } : v2));
+  }
+
+  async function uploadImage(key: number, file: File) {
+    setVariant(key, 'uploading', true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+      const res = await fetch(`${API_BASE}/api/admin/upload`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      setVariant(key, 'imageUrl', data.url);
+      toast.success('Image uploaded!');
+    } catch {
+      toast.error('Image upload failed');
+    } finally {
+      setVariant(key, 'uploading', false);
+    }
   }
 
   async function save(e: React.FormEvent) {
@@ -44,7 +70,11 @@ export default function NewProductPage() {
     try {
       await api.post('/products', {
         ...form,
-        variants: variants.map(({ _key, ...v }) => v),
+        variants: variants.map(({ _key, imageUrl, uploading, ...v }) => ({
+          ...v,
+          // Store image as array of {url} objects to match frontend expectations
+          Image: imageUrl ? [{ url: imageUrl }] : null,
+        })),
       });
       toast.success('Product created!');
       router.push('/products');
@@ -98,28 +128,60 @@ export default function NewProductPage() {
                 </button>
               </div>
               <div className="card-body">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px 100px 36px', gap: '6px 8px', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)' }}>SKU *</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)' }}>Color</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)' }}>Size</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)' }}>Stock</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)' }}>Price ฿</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)' }}>Sale ฿</span>
-                  <span />
-                </div>
                 {variants.map(v => (
-                  <div key={v._key} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px 100px 36px', gap: '6px 8px', alignItems: 'center', marginBottom: 8 }}>
-                    <input className="form-input" value={v.sku} onChange={e => setVariant(v._key, 'sku', e.target.value)} placeholder="SKU-001" style={{ fontSize: 13 }} />
-                    <input className="form-input" value={v.color} onChange={e => setVariant(v._key, 'color', e.target.value)} placeholder="Black" style={{ fontSize: 13 }} />
-                    <input className="form-input" value={v.size} onChange={e => setVariant(v._key, 'size', e.target.value)} placeholder="M" style={{ fontSize: 13 }} />
-                    <input className="form-input" type="number" value={v.stockqty} onChange={e => setVariant(v._key, 'stockqty', e.target.value)} style={{ fontSize: 13 }} />
-                    <input className="form-input" type="number" value={v.pricing} onChange={e => setVariant(v._key, 'pricing', e.target.value)} style={{ fontSize: 13 }} />
-                    <input className="form-input" type="number" value={v.salePricing} onChange={e => setVariant(v._key, 'salePricing', e.target.value)} placeholder="—" style={{ fontSize: 13 }} />
-                    <button type="button" className="btn btn-danger btn-icon"
-                      onClick={() => setVariants(vs => vs.filter(x => x._key !== v._key))}
-                      disabled={variants.length === 1}>
-                      <Trash2 size={14} />
-                    </button>
+                  <div key={v._key} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 16, marginBottom: 12 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px 100px 36px', gap: '6px 8px', alignItems: 'center', marginBottom: 10 }}>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>SKU *</span>
+                        <input className="form-input" value={v.sku} onChange={e => setVariant(v._key, 'sku', e.target.value)} placeholder="SKU-001" style={{ fontSize: 13 }} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Color</span>
+                        <input className="form-input" value={v.color} onChange={e => setVariant(v._key, 'color', e.target.value)} placeholder="Black" style={{ fontSize: 13 }} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Size</span>
+                        <input className="form-input" value={v.size} onChange={e => setVariant(v._key, 'size', e.target.value)} placeholder="M" style={{ fontSize: 13 }} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Stock</span>
+                        <input className="form-input" type="number" value={v.stockqty} onChange={e => setVariant(v._key, 'stockqty', e.target.value)} style={{ fontSize: 13 }} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Price ฿</span>
+                        <input className="form-input" type="number" value={v.pricing} onChange={e => setVariant(v._key, 'pricing', e.target.value)} style={{ fontSize: 13 }} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Sale ฿</span>
+                        <input className="form-input" type="number" value={v.salePricing} onChange={e => setVariant(v._key, 'salePricing', e.target.value)} placeholder="—" style={{ fontSize: 13 }} />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 2 }}>
+                        <button type="button" className="btn btn-danger btn-icon"
+                          onClick={() => setVariants(vs => vs.filter(x => x._key !== v._key))}
+                          disabled={variants.length === 1}>
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Image upload */}
+                    <div style={{ marginTop: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 6 }}>Variant Image</span>
+                      {v.imageUrl ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <img src={`${API_BASE}${v.imageUrl}`} alt="variant" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
+                          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setVariant(v._key, 'imageUrl', '')}>
+                            <X size={13} /> Remove
+                          </button>
+                        </div>
+                      ) : (
+                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '6px 12px', border: '1px dashed var(--border)', borderRadius: 8, fontSize: 13, color: 'var(--txt-muted)' }}>
+                          {v.uploading ? 'Uploading…' : <><Upload size={14} /> Upload Image</>}
+                          <input type="file" accept="image/*" style={{ display: 'none' }} disabled={v.uploading}
+                            onChange={e => { if (e.target.files?.[0]) uploadImage(v._key, e.target.files[0]); }} />
+                        </label>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

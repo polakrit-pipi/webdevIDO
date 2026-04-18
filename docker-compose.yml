@@ -24,7 +24,7 @@ services:
       start_period: 10s
 
   # ============================================
-  # 2. Express.js Backend (API + AdminJS)
+  # 2. Express.js Backend (API)
   # ============================================
   backend:
     container_name: ideabyido-backend
@@ -60,7 +60,7 @@ services:
       start_period: 30s
 
   # ============================================
-  # 4. Next.js Admin Dashboard
+  # 3. Next.js Admin Dashboard
   # ============================================
   admin:
     container_name: ideabyido-admin
@@ -72,6 +72,8 @@ services:
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:1337
+      PORT: 3001
+      HOSTNAME: "0.0.0.0"
     ports:
       - "3001:3001"
     depends_on:
@@ -79,6 +81,37 @@ services:
         condition: service_healthy
     networks:
       - idoidentity-network
+
+  # ============================================
+  # 4. Next.js Frontend (Customer-facing Store)
+  # ============================================
+  frontend:
+    container_name: ideabyido-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+      STRAPI_INTERNAL_URL: http://backend:1337
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - idoidentity-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000 || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
 
 # ============================================

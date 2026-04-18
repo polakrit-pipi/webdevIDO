@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
         port: '1337',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'backend',
+        port: '1337',
+        pathname: '/uploads/**',
+      },
     ],
 
     unoptimized: true,

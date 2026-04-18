@@ -35,14 +35,18 @@ interface CleanedProduct {
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
 
 const { slug } = await params;
+
+    // Server-side: use internal Docker URL; client-side: use public URL
+    const INTERNAL_API = process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    const PUBLIC_API = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
     
     let product: CleanedProduct | null = null;
 
     try {
         // 1. Fetch data with a timeout/error check
         const response = await fetch(
-            `http://localhost:1337/api/products/${slug}?populate[variants][populate]=Image`,
-            { next: { revalidate: 60 } } // Optional: revalidate cache every minute
+            `${INTERNAL_API}/api/products/${slug}?populate[variants][populate]=Image`,
+            { next: { revalidate: 60 } }
         );
 
         if (!response.ok) {
@@ -71,7 +75,7 @@ const { slug } = await params;
             images: Array.from(new Set(
                 data.variants
                     .flatMap((v: Variant) => v.Image || []) // Media: Image (multiple: true) 
-                    .map((img: StrapiImage) => `http://localhost:1337${img.url}`)
+                    .map((img: StrapiImage) => `${PUBLIC_API}${img.url}`)
             )) as string[],
             variants: data.variants
         };

@@ -66,7 +66,7 @@ export const useProduct = () => {
 
     try {
       // Fetch user data including wishlist
-      const res = await fetch("http://localhost:1337/api/users/me?populate[wishlists][populate]=product", {
+      const res = await fetch(`${API_URL}/api/users/me?populate[wishlists][populate]=product`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -87,16 +87,14 @@ export const useProduct = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [catRes, prodRes, bannerRes, colorRes] = await Promise.all([
+        const [catRes, prodRes, bannerRes] = await Promise.all([
           fetch(`${API_URL}/api/categories?populate=categoryPic`).then(r => r.json()),
           fetch(`${API_URL}/api/products?populate[variants][populate]=*&populate[cat_pro][populate]=categoryPic`).then(r => r.json()),
           fetch(`${API_URL}/api/banner?populate=*`).then(r => r.json()),
-          getColors() // Keeping the fetch, removing the constant
         ]);
 
         setCategories(catRes.data || []);
         setProducts(prodRes.data || []);
-        setColors(colorRes);
 
         const imageData = bannerRes.data?.Image;
         if (imageData?.url) {
@@ -106,6 +104,14 @@ export const useProduct = () => {
         console.error("Error fetching data:", error);
       } finally {
         setIsLoading(false);
+      }
+
+      // Colors are optional — don't let them crash the page
+      try {
+        const colorRes = await getColors();
+        setColors(colorRes);
+      } catch {
+        // Colors unavailable, that's fine
       }
     };
     fetchData();

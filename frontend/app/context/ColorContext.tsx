@@ -1,14 +1,19 @@
 
+const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+
 export async function getColors() {
+  try {
+    const res = await fetch(`${API_URL}/api/color`, {
+      cache: 'no-store',
+    });
 
-  const res = await fetch(`http://localhost:1337/api/color`, {
-    next: { revalidate: 60 }, // Cache for 60 seconds
-  });
+    if (!res.ok) return null;
 
-  if (!res.ok) throw new Error("Failed to fetch colors");
+    const result = await res.json();
 
-  const result = await res.json();
-  
-  // Clean up the Strapi data structure here so your page is clean
-  return result.data.color
-};
+    // result.data is the color row, .color is the JSON theme config
+    return result?.data?.color ?? null;
+  } catch {
+    return null;
+  }
+}

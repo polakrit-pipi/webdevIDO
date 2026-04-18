@@ -7,14 +7,23 @@ type ProductCardProps = {
 };
 
 export default function ProductCard({ name, price, imageUrl }: ProductCardProps) {
+    const src = imageUrl && imageUrl !== '' ? imageUrl : '/placeholder.png';
     return (
-        <div className="w-[15vw] h-[20vw] rounded-lg shadow-lg cursor-pointer">
-            <div className="relative w-full h-[14vw] bg-neutral-200 rounded-t-lg">
-                <Image src={imageUrl} alt={name} fill unoptimized sizes="50vw, 25vw" className="object-cover rounded-t-lg" />
+        <div className="w-full rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-200">
+            <div className="relative w-full aspect-[3/4] bg-neutral-200 rounded-t-lg overflow-hidden">
+                <Image
+                    src={src}
+                    alt={name}
+                    fill
+                    unoptimized
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover rounded-t-lg"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.png'; }}
+                />
             </div>
-            <div className="p-[1vw] text-start flex-1">
-                <h3 className="text-[1.2vw] font-semibold truncate">{name}</h3>
-                <p className="text-[1vw] text-gray-600">฿{price.toLocaleString()}</p>
+            <div className="p-3 text-start flex-1">
+                <h3 className="text-sm md:text-base font-semibold truncate">{name}</h3>
+                <p className="text-sm text-gray-600">฿{Number(price).toLocaleString()}</p>
             </div>
         </div>
     );

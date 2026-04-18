@@ -9,8 +9,8 @@ import CategoryGrid from "@/app/product/components/features/CategoryGrid";
 import { useLanguage } from "@/app/context/LanguageContext";
 
 function ProductContent() {
-  const store = useProduct(); 
-  const { wishlistItems, toggleWishlist } = useProduct();
+  const store = useProduct();
+  const { wishlistItems, toggleWishlist } = store;
   const { t } = useLanguage();
 
   const getPageTitle = () => {
