@@ -41,7 +41,17 @@ export default function ProductDescription({ description }: ProductDescriptionPr
   };
 
   // ตรวจสอบเบื้องต้นว่า description เป็น object หรือไม่
-  const safeDescription = typeof description === 'string' ? JSON.parse(description || '{}') : (description || {});
+  let safeDescription: Record<string, unknown> = {};
+  if (typeof description === 'string') {
+    try {
+      safeDescription = JSON.parse(description || '{}');
+    } catch {
+      // Plain-text description — show it as a single "details" entry
+      safeDescription = description ? { details: description } : {};
+    }
+  } else {
+    safeDescription = description || {};
+  }
 
   return (
     <div className="mt-8 flex flex-col gap-8 w-full">
