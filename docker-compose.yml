@@ -60,7 +60,7 @@ services:
       start_period: 30s
 
   # ============================================
-  # 3. Next.js Admin Dashboard
+  # 3. Next.js Admin Dashboard (internal only)
   # ============================================
   admin:
     container_name: ideabyido-admin
@@ -74,8 +74,7 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:1337
       PORT: 3001
       HOSTNAME: "0.0.0.0"
-    ports:
-      - "3001:3001"
+    # No external port — accessed through the frontend proxy at /admin
     depends_on:
       backend:
         condition: service_healthy
@@ -92,6 +91,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+        ADMIN_INTERNAL_URL: http://admin:3001
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -99,11 +99,14 @@ services:
       HOSTNAME: "0.0.0.0"
       NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
       STRAPI_INTERNAL_URL: http://backend:1337
+      ADMIN_INTERNAL_URL: http://admin:3001
     ports:
       - "3000:3000"
     depends_on:
       backend:
         condition: service_healthy
+      admin:
+        condition: service_started
     networks:
       - idoidentity-network
     healthcheck:

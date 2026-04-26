@@ -17,6 +17,7 @@ interface Variant {
     size: string | null;
     stockqty: number;
     pricing: number;
+    salePricing?: number;
     Image?: StrapiImage[]; 
 }
 

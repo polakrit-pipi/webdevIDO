@@ -5,6 +5,7 @@ const th: Record<string, string> = {
   "nav.trouser": "กางเกง",
   "nav.others": "สินค้าอื่นๆ",
   "nav.sale": "ลดราคา",
+  "nav.team": "ทีมงาน",
 
   // === Hero ===
   "hero.buyNow": "ซื้อตอนนี้",

@@ -78,8 +78,8 @@ export default function Navbar() {
 
     <>  
     <nav className={`flex items-center justify-center border-b fixed top-0 bg-white z-50 w-screen transition-all duration-300 ${isScrolled ? 'h-[4.5vw]' : 'h-[7vw]'}`}>
-        {/* left */}
-        <div className="flex absolute left-0 justify-between w-[25vw] pl-[3vw] text-[1vw]">
+        {/* left — product categories + team */}
+        <div className="flex absolute left-0 justify-between w-[30vw] pl-[3vw] text-[1vw]">
           <Link href={'/product'}>
           <p>{t('nav.recommend')}</p>
           </Link>
@@ -95,6 +95,9 @@ export default function Navbar() {
           <Link href={'/product?sale=true'}>
           <p className="text-[#5F4B8B]">{t('nav.sale')}</p>
           </Link>
+          <Link href={'/team'}>
+          <p>{t('nav.team')}</p>
+          </Link>
         </div>
         
         {/* mid */}
@@ -106,7 +109,7 @@ export default function Navbar() {
         </div>
 
         {/* right */}
-        <div className="flex items-center  justify-between pr-[3vw] w-[20vw] absolute right-0">
+        <div className="flex items-center  justify-between pr-[3vw] w-[22vw] absolute right-0">
           <div className="w-[1.1vw] h-[1.1vw] relative">
             <Link href={'/account/'}>
               <Image src='/user-info-icon.png' fill alt="user-info-icon" className="object-contain"></Image>
@@ -124,6 +127,15 @@ export default function Navbar() {
             <Link href={'/cart/'}>
             <Image src='/cart-icon.png' fill alt="cart-icon" className="object-contain"></Image>
             </Link>
+          </div>
+
+          {/* Admin link — must use <a> for full page nav across the rewrite boundary */}
+          <div className="w-[1.1vw] h-[1.1vw] relative flex items-center justify-center hover:opacity-70 transition-opacity">
+            <a href="/admin/login">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full text-gray-700">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </a>
           </div>
 
           <LanguageSwitcher />
