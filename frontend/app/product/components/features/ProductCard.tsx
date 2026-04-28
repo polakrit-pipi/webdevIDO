@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Product } from "@/types/types"; 
 import { getImageUrl, getProductVariantImage } from "@/hooks/useProduct"; 
 import { HeartIconOutline, HeartIconSolid } from "@/app/product/components/ui/icons";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface ProductCardProps {
   product: Product;
@@ -11,6 +12,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, isWishlisted, onToggleWishlist }: ProductCardProps) {
+  const { formatPrice } = useCurrency();
   // 1. FIX: Safely handle if variants is undefined
   const variants = product.variants || []; 
   const mainVariant = variants[0];
@@ -54,11 +56,11 @@ export default function ProductCard({ product, isWishlisted, onToggleWishlist }:
         <div className="mt-1 text-sm flex items-center gap-2">
           {isSale ? (
             <>
-              <span className="font-bold text-red-600">{salePrice.toLocaleString()} ฿</span>
-              <span className="text-gray-400 line-through text-xs">{price.toLocaleString()} ฿</span>
+              <span className="font-bold text-red-600">{formatPrice(salePrice)}</span>
+              <span className="text-gray-400 line-through text-xs">{formatPrice(price)}</span>
             </>
           ) : (
-            <span className="font-bold text-gray-900">{price.toLocaleString()} ฿</span>
+            <span className="font-bold text-gray-900">{formatPrice(price)}</span>
           )}
         </div>
       </div>

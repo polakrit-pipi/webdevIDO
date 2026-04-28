@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { getColors } from "../app/context/ColorContext";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface ProductActionProps {
     product: {
@@ -22,6 +23,7 @@ export default function ProductAction({ product }: ProductActionProps) {
     const [quantity, setQuantity] = useState(1);
     const [colors, setColors] = useState(null);
     const { t } = useLanguage();
+    const { formatPrice } = useCurrency();
 
     useEffect(() => {
         async function fetchData() {
@@ -214,15 +216,15 @@ const handleAddToCart = async () => {
                     {isSale ? (
                         <>
                             <p className="text-[2vw] text-red-600 py-[1.5vw]">
-                                {displaySalePrice.toLocaleString()} {t("detail.baht")}
+                                {formatPrice(displaySalePrice)}
                             </p>
                             <p className="text-[1vw] text-[#716F71] line-through">
-                                {displayPrice.toLocaleString()} {t("detail.baht")}
+                                {formatPrice(displayPrice)}
                             </p>
                         </>
                     ) : (
                         <p className="text-[2vw] text-[#5F4B8B] py-[1.5vw]">
-                            {displayPrice.toLocaleString()} {t("detail.baht")}
+                            {formatPrice(displayPrice)}
                         </p>
                     )}
                 </div>

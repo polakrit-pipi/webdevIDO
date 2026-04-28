@@ -3,12 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product, WishlistItem } from "@/types/types";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface WishlistCardProps { item: WishlistItem; isAddingToCart: boolean; onRemove: (id: string) => void; onAddToCart: (product: Product) => void; }
 
 export default function WishlistCard({ item, isAddingToCart, onRemove, onAddToCart }: WishlistCardProps) {
   const product = item.product;
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   if (!product) return null;
   const firstVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
   const productImageObj = firstVariant?.Image && firstVariant.Image.length > 0 ? firstVariant.Image[0] : null;
@@ -26,7 +28,7 @@ export default function WishlistCard({ item, isAddingToCart, onRemove, onAddToCa
         <Link href={`/product/${product.slug || product.documentId}`}>
           <h3 className="text-base font-normal mb-1 truncate hover:text-purple-600 transition-colors">{productName}</h3>
         </Link>
-        <p className="text-lg font-medium text-black mb-4">{price > 0 ? `${price.toLocaleString()} THB` : t("wishlist.noPrice")}</p>
+        <p className="text-lg font-medium text-black mb-4">{price > 0 ? formatPrice(price) : t("wishlist.noPrice")}</p>
         <button onClick={() => onAddToCart(product)} disabled={isAddingToCart} className={`w-full py-2 text-sm rounded transition-colors ${isAddingToCart ? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white hover:bg-purple-600"}`}>
           {isAddingToCart ? t("wishlist.adding") : t("wishlist.addToCart")}
         </button>

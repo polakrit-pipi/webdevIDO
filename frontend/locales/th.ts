@@ -23,7 +23,7 @@ const th: Record<string, string> = {
   "footer.subscribe": "สมัครรับข่าวสาร",
   "footer.specialOffer": "เพื่อรับข้อเสนอพิเศษ",
   "footer.emailPlaceholder": "อีเมล",
-  "footer.consent": "ฉันต้องการอีเมลข่าวสารจาก IDOIDENTITY",
+  "footer.consent": "ฉันต้องการอีเมลข่าวสารจาก MUHAIDENTITY",
   "footer.help": "ช่วยเหลือ",
   "footer.contactUs": "ติดต่อเรา",
   "footer.faq": "คำถามที่พบบ่อย",
@@ -40,7 +40,7 @@ const th: Record<string, string> = {
 
   // === About Page ===
   "about.whoWeAre": "เราคือใคร",
-  "about.intro1": "IDOIDENTITY คือแบรนด์เสื้อผ้าที่มุ่งเน้นความเรียบง่าย ทันสมัย และสะท้อนตัวตนของผู้สวมใส่",
+  "about.intro1": "MUHAIDENTITY คือแบรนด์เสื้อผ้าที่มุ่งเน้นความเรียบง่าย ทันสมัย และสะท้อนตัวตนของผู้สวมใส่",
   "about.intro2": "เราใส่ใจในคุณภาพของวัสดุและการออกแบบ เพื่อประสบการณ์ที่ดีที่สุด",
   "about.detail1": "ออกแบบให้เหมาะกับทุกไลฟ์สไตล์",
   "about.detail2": "ใช้วัสดุคุณภาพสูง",

@@ -44,7 +44,7 @@ export default function LoginPage() {
           }}>
             <Zap size={26} color="#fff" />
           </div>
-          <h1 style={{ color: '#f1f5f9', fontSize: 22, fontWeight: 800, margin: 0 }}>ideabyido Admin</h1>
+          <h1 style={{ color: '#f1f5f9', fontSize: 22, fontWeight: 800, margin: 0 }}>ideabymuha Admin</h1>
           <p style={{ color: '#64748b', fontSize: 13, marginTop: 6 }}>Sign in to your admin account</p>
         </div>
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
                 className="form-input"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="admin@ideabyido.com"
+                placeholder="admin@ideabymuha.com"
                 required
                 style={{ background: '#0f172a', borderColor: '#334155', color: '#f1f5f9' }}
               />

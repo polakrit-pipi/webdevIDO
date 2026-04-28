@@ -2,9 +2,53 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Search from "./Search";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
+
+function CurrencySwitcher() {
+  const { currency, setCurrency } = useCurrency();
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const currencies: ("THB" | "USD" | "EUR" | "GBP" | "JPY")[] = ["THB", "USD", "EUR", "GBP", "JPY"];
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-center font-bold text-[0.8vw] opacity-70 hover:opacity-100 transition-opacity"
+        aria-label="Change currency"
+      >
+        {currency}
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-[0.3vw] bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[3.5vw] overflow-hidden">
+          {currencies.map((c) => (
+            <button
+              key={c}
+              onClick={() => { setCurrency(c); setIsOpen(false); }}
+              className={`block w-full text-left px-[0.6vw] py-[0.4vw] text-[0.75vw] hover:bg-gray-50 transition-colors ${currency === c ? "text-[#5F4B8B] font-bold" : "text-gray-600"}`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function LanguageSwitcher() {
   const { locale, setLocale } = useLanguage();
@@ -54,8 +98,6 @@ function LanguageSwitcher() {
 }
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const { t } = useLanguage();
 
@@ -103,7 +145,7 @@ export default function Navbar() {
         {/* mid */}
         <div className="flex flex-col gap-1.5 w-[20vw] text-center justify-center items-center">
           <Link href={'/'}>
-            <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[2vw]' : 'text-[2.7vw]'}`}>IDOIDENTITY</p>
+            <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[2vw]' : 'text-[2.7vw]'}`}>MUHAIDENTITY</p>
             <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[1vw]' : 'text-[1.3vw]'}`}>BANGKOK</p>
           </Link>
         </div>
@@ -138,6 +180,7 @@ export default function Navbar() {
             </a>
           </div>
 
+          <CurrencySwitcher />
           <LanguageSwitcher />
           
         </div>

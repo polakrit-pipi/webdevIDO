@@ -2,12 +2,14 @@
 import Image from "next/image";
 import { CartItem } from "@/types/types";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface CartItemRowProps { item: CartItem; isUpdating: boolean; onUpdateQty: (sku: string, change: number) => void; onRemove: (sku: string) => void; }
 
 export default function CartItemRow({ item, isUpdating, onUpdateQty, onRemove }: CartItemRowProps) {
   const { product, sku, quantity } = item;
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
 
   if (!product) {
     return (
@@ -39,7 +41,7 @@ export default function CartItemRow({ item, isUpdating, onUpdateQty, onRemove }:
             <h3 className="text-lg font-medium">{product.ProductName}</h3>
             <p className="text-sm text-gray-500 mt-1">SKU: {sku}</p>
           </div>
-          <p className="font-semibold text-lg">{price.toLocaleString()} THB</p>
+          <p className="font-semibold text-lg">{formatPrice(price)}</p>
         </div>
         <div className="flex justify-between items-end mt-4">
           <div className="flex items-center border rounded">

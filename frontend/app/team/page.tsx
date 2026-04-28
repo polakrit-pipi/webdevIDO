@@ -5,32 +5,32 @@ import Link from "next/link";
 // ── Team member data ─────────────────────────────────────────────────────────
 const members = [
   {
-    id: "6788001",
-    name: "Sinawat Phumphuang",
+    id: "6788010",
+    name: "Sinawat Chaisrithammakun",
     role: "Full-Stack Developer",
     description: "Responsible for backend architecture, database design, and Docker deployment.",
   },
   {
-    id: "6788002",
-    name: "Apinya Srisuk",
+    id: "6788012",
+    name: "Sirasit Chaiyawong",
     role: "Frontend Developer",
     description: "Designs and implements the customer-facing storefront using Next.js and Tailwind.",
   },
   {
-    id: "6788003",
-    name: "Tanapat Wongkham",
+    id: "6788043",
+    name: "Pongsiri Khongthanadet",
     role: "UI/UX Designer",
     description: "Creates wireframes, user flows, and visual design assets for the project.",
   },
   {
-    id: "6788004",
-    name: "Natthapong Jitpakdee",
+    id: "6788054",
+    name: "Polakrit Krajaisri",
     role: "Backend Developer",
     description: "Builds and maintains REST API endpoints, authentication, and data validation.",
   },
   {
-    id: "6788005",
-    name: "Warisara Charoenwong",
+    id: "6788146",
+    name: "Ariyawuth Worakunpisuth",
     role: "QA & Documentation",
     description: "Handles testing, bug reporting, and maintains project documentation.",
   },
@@ -99,7 +99,7 @@ export default function TeamPage() {
           Our Team
         </h1>
         <p style={{ color: "#716F71", fontSize: "1rem", maxWidth: 480, margin: "0 auto" }}>
-          Meet the people behind IDOIDENTITY — the team that designs, builds, and maintains this platform.
+          Meet the people behind MUHAIDENTITY — the team that designs, builds, and maintains this platform.
         </p>
       </header>
 

@@ -1,5 +1,5 @@
 // ============================================
-// Prisma Schema — idoidentity backend
+// Prisma Schema — muhaidentity backend
 // Maps all Strapi content types to clean relational models
 // ============================================
 
@@ -38,6 +38,43 @@ model User {
   transactions Transaction[]
 
   @@map("users")
+}
+
+// ============================================
+// Administrator (Phase II Requirement)
+// ============================================
+model Admin {
+  id        Int      @id @default(autoincrement())
+  documentId String  @unique @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  firstname String?
+  lastname  String?
+  address   Json?    // { line1, subdistrict, district, province, zipcode }
+  age       Int?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  loginLogs AdminLoginLog[]
+
+  @@map("admins")
+}
+
+// ============================================
+// Administrator Login Log (Phase II Requirement)
+// ============================================
+model AdminLoginLog {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  loginTime DateTime @default(now())
+  ipAddress String?
+  status    String   @default("SUCCESS") // SUCCESS, FAILED
+  
+  @@map("admin_login_logs")
 }
 
 // ============================================

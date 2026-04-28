@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Category } from "@/types/types";
 import { SIZES } from "@/hooks/useProduct";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface FilterSidebarProps {
   categories: Category[];
@@ -12,6 +13,7 @@ interface FilterSidebarProps {
 
 export default function FilterSidebar({ categories, availableColors, colorMap, store }: FilterSidebarProps) {
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   const [openSections, setOpenSections] = useState<any>({ sort: true, category: true, color: true, size: true, price: true });
   const toggleSection = (section: string) => setOpenSections((prev: any) => ({ ...prev, [section]: !prev[section] }));
   const toggleSet = (current: string[], value: string) => current.includes(value) ? current.filter(x => x !== value) : [...current, value];
@@ -63,7 +65,7 @@ export default function FilterSidebar({ categories, availableColors, colorMap, s
         </div>
       </SidebarSection>
       <SidebarSection title={t("filter.price")} section="price" openSections={openSections} toggleSection={toggleSection}>
-        <div className="flex justify-between text-xs text-gray-500 mb-2"><span>0 ฿</span><span>{store.priceRange.toLocaleString()} ฿</span></div>
+        <div className="flex justify-between text-xs text-gray-500 mb-2"><span>{formatPrice(0)}</span><span>{formatPrice(store.priceRange)}</span></div>
         <input type="range" min="0" max="10000" step="100" value={store.priceRange} onChange={(e) => store.setPriceRange(Number(e.target.value))} className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black" />
       </SidebarSection>
     </aside>
