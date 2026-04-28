@@ -76,7 +76,7 @@ const { slug } = await params;
             images: Array.from(new Set(
                 data.variants
                     .flatMap((v: Variant) => v.Image || []) // Media: Image (multiple: true) 
-                    .map((img: StrapiImage) => `${PUBLIC_API}${img.url}`)
+                    .map((img: StrapiImage) => img.url.startsWith('http') ? img.url : `${PUBLIC_API}${img.url}`)
             )) as string[],
             variants: data.variants
         };

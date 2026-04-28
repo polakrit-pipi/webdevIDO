@@ -4,36 +4,11 @@ import Link from "next/link";
 
 // ── Team member data ─────────────────────────────────────────────────────────
 const members = [
-  {
-    id: "6788010",
-    name: "Sinawat Chaisrithammakun",
-    role: "Full-Stack Developer",
-    description: "Responsible for backend architecture, database design, and Docker deployment.",
-  },
-  {
-    id: "6788012",
-    name: "Sirasit Chaiyawong",
-    role: "Frontend Developer",
-    description: "Designs and implements the customer-facing storefront using Next.js and Tailwind.",
-  },
-  {
-    id: "6788043",
-    name: "Pongsiri Khongthanadet",
-    role: "UI/UX Designer",
-    description: "Creates wireframes, user flows, and visual design assets for the project.",
-  },
-  {
-    id: "6788054",
-    name: "Polakrit Krajaisri",
-    role: "Backend Developer",
-    description: "Builds and maintains REST API endpoints, authentication, and data validation.",
-  },
-  {
-    id: "6788146",
-    name: "Ariyawuth Worakunpisuth",
-    role: "QA & Documentation",
-    description: "Handles testing, bug reporting, and maintains project documentation.",
-  },
+  { id: "6788010", name: "Sinawat Chaisrithammakun" },
+  { id: "6788012", name: "Sirasit Chaiyawong" },
+  { id: "6788043", name: "Pongsiri Khongthanadet" },
+  { id: "6788054", name: "Polakrit Krajaisri" },
+  { id: "6788146", name: "Ariyawuth Worakunpisuth" },
 ];
 
 // ── Placeholder avatar SVG ────────────────────────────────────────────────────
@@ -170,19 +145,10 @@ export default function TeamPage() {
               </span>
 
               {/* Name */}
-              <h2 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a2e", margin: "0 0 0.25rem" }}>
+              <h2 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a2e", margin: "0" }}>
                 {member.name}
               </h2>
 
-              {/* Role */}
-              <p style={{ fontSize: "0.82rem", color: "#5F4B8B", fontWeight: 500, marginBottom: "0.8rem" }}>
-                {member.role}
-              </p>
-
-              {/* Description */}
-              <p style={{ fontSize: "0.82rem", color: "#716F71", lineHeight: 1.6 }}>
-                {member.description}
-              </p>
             </article>
           );
         })}

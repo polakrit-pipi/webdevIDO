@@ -62,7 +62,7 @@ export default function LoginPage() {
                 className="form-input"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="admin@ideabymuha.com"
+                placeholder="admin@muha.com"
                 required
                 style={{ background: '#0f172a', borderColor: '#334155', color: '#f1f5f9' }}
               />

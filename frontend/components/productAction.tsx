@@ -80,7 +80,8 @@ export default function ProductAction({ product }: ProductActionProps) {
         }
 
         try {
-            const response = await fetch("http://localhost:1337/api/wishlists", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:3001";
+            const response = await fetch(`${apiUrl}/api/wishlists`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -107,7 +108,7 @@ export default function ProductAction({ product }: ProductActionProps) {
     };
 const handleAddToCart = async () => {
     const token = localStorage.getItem("token");
-    const apiUrl = "http://localhost:1337";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:3001";
 
     if (!token) {
         alert("Please login first");

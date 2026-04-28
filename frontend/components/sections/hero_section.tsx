@@ -13,21 +13,10 @@ export default function Hero_section() {
 
   useEffect(() => {
     setVisible(true);
-    fetchBanner();
+    setBannerUrl('https://img.freepik.com/free-photo/shop-is-now-open_53876-15332.jpg');
   }, []);
 
-  const fetchBanner = async () => {
-    try {
-      const res = await fetch(`${apiUrl}/api/banner?populate=*`);
-      const response = await res.json();
-      const imageData = response.data?.Image;
-      if (imageData && imageData.url) {
-        setBannerUrl(`${apiUrl}${imageData.url}`);
-      }
-    } catch (error) {
-      console.log("Error fetching banner: " + error);
-    }
-  };
+
 
   return (
     <div className="w-full h-[40vw] relative flex items-center justify-center mt-[7vw] bg-neutral-200 transition-all duration-700 overflow-hidden">

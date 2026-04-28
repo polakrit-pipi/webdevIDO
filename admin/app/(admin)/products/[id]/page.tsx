@@ -8,6 +8,7 @@ import api from '@/lib/api';
 interface Variant {
   id: number; sku: string; color: string | null; size: string | null;
   stockqty: number | null; pricing: string; salePricing: number | null;
+  Image?: { url: string }[] | null;
 }
 interface Product {
   id: number; ProductName: string; recomended: boolean; description: any;
@@ -18,7 +19,7 @@ interface Product {
 interface Category { id: number; categoryName: string; }
 
 let keyC = 0;
-interface EditVariant extends Variant { _key: number; _new?: boolean; }
+interface EditVariant extends Variant { _key: number; _new?: boolean; imageUrl: string; }
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -39,7 +40,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         recomended: p.recomended,
         description: typeof p.description === 'string' ? p.description : '',
       });
-      setVariants(p.variants.map(v => ({ ...v, _key: ++keyC })));
+      setVariants(p.variants.map(v => {
+        let imageUrl = '';
+        if (v.Image && v.Image.length > 0) imageUrl = v.Image[0].url;
+        return { ...v, _key: ++keyC, imageUrl };
+      }));
       setCats(cr.data);
     });
   }, [id]);
@@ -54,6 +59,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     setVariants(vs => [...vs, {
       id: -1, _key: ++keyC, _new: true,
       sku: '', color: '', size: '', stockqty: 0, pricing: '0', salePricing: null,
+      imageUrl: '',
     }]);
   }
 
@@ -83,6 +89,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           stockqty: Number(v.stockqty ?? 0),
           pricing: Number(v.pricing ?? 0),
           salePricing: v.salePricing ? Number(v.salePricing) : null,
+          Image: v.imageUrl ? [{ url: v.imageUrl }] : null,
         };
         if (v._new) {
           await api.post(`/products/${id}/variants`, payload);
@@ -144,14 +151,24 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 ))}
               </div>
               {variants.map(v => (
-                <div key={v._key} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px 100px 36px', gap: '6px 8px', marginBottom: 8 }}>
-                  <input className="form-input" value={v.sku} onChange={e => setVField(v._key, 'sku', e.target.value)} style={{ fontSize: 13 }} />
-                  <input className="form-input" value={v.color ?? ''} onChange={e => setVField(v._key, 'color', e.target.value)} style={{ fontSize: 13 }} />
-                  <input className="form-input" value={v.size ?? ''} onChange={e => setVField(v._key, 'size', e.target.value)} style={{ fontSize: 13 }} />
-                  <input className="form-input" type="number" value={v.stockqty ?? 0} onChange={e => setVField(v._key, 'stockqty', e.target.value)} style={{ fontSize: 13 }} />
-                  <input className="form-input" type="number" value={v.pricing} onChange={e => setVField(v._key, 'pricing', e.target.value)} style={{ fontSize: 13 }} />
-                  <input className="form-input" type="number" value={v.salePricing ?? ''} onChange={e => setVField(v._key, 'salePricing', e.target.value)} placeholder="—" style={{ fontSize: 13 }} />
-                  <button className="btn btn-danger btn-icon" onClick={() => deleteVariant(v)}><Trash2 size={14} /></button>
+                <div key={v._key} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 16, marginBottom: 12 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px 100px 36px', gap: '6px 8px', marginBottom: 8 }}>
+                    <input className="form-input" value={v.sku} onChange={e => setVField(v._key, 'sku', e.target.value)} style={{ fontSize: 13 }} />
+                    <input className="form-input" value={v.color ?? ''} onChange={e => setVField(v._key, 'color', e.target.value)} style={{ fontSize: 13 }} />
+                    <input className="form-input" value={v.size ?? ''} onChange={e => setVField(v._key, 'size', e.target.value)} style={{ fontSize: 13 }} />
+                    <input className="form-input" type="number" value={v.stockqty ?? 0} onChange={e => setVField(v._key, 'stockqty', e.target.value)} style={{ fontSize: 13 }} />
+                    <input className="form-input" type="number" value={v.pricing} onChange={e => setVField(v._key, 'pricing', e.target.value)} style={{ fontSize: 13 }} />
+                    <input className="form-input" type="number" value={v.salePricing ?? ''} onChange={e => setVField(v._key, 'salePricing', e.target.value)} placeholder="—" style={{ fontSize: 13 }} />
+                    <button className="btn btn-danger btn-icon" onClick={() => deleteVariant(v)}><Trash2 size={14} /></button>
+                  </div>
+                  {/* Image URL Input */}
+                  <div style={{ marginTop: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Image URL</span>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                      <input className="form-input" value={v.imageUrl} onChange={e => setVField(v._key, 'imageUrl', e.target.value)} placeholder="https://img.freepik.com/..." style={{ flex: 1, fontSize: 13 }} />
+                      {v.imageUrl && <img src={v.imageUrl.startsWith('http') ? v.imageUrl : `http://localhost:1337${v.imageUrl}`} alt="preview" style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4, border: '1px solid var(--border)' }} />}
+                    </div>
+                  </div>
                 </div>
               ))}
               {variants.length === 0 && <p className="text-muted" style={{ fontSize: 13 }}>No variants yet. Add one above.</p>}

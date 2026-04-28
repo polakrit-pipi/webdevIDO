@@ -1,7 +1,3 @@
-// ============================================
-// Prisma Schema — muhaidentity backend
-// Maps all Strapi content types to clean relational models
-// ============================================
 
 generator client {
   provider = "prisma-client-js"
@@ -12,9 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
-// User (replaces Strapi users-permissions)
-// ============================================
 model User {
   id        Int      @id @default(autoincrement())
   documentId String  @unique @default(uuid())
@@ -41,7 +34,7 @@ model User {
 }
 
 // ============================================
-// Administrator (Phase II Requirement)
+// Administrator 
 // ============================================
 model Admin {
   id        Int      @id @default(autoincrement())
@@ -64,7 +57,7 @@ model Admin {
 }
 
 // ============================================
-// Administrator Login Log (Phase II Requirement)
+// Administrator Login Log 
 // ============================================
 model AdminLoginLog {
   id        Int      @id @default(autoincrement())
@@ -102,9 +95,6 @@ model Product {
   @@map("products")
 }
 
-// ============================================
-// ProductVariant (was Strapi component "elements.product-variants")
-// ============================================
 model ProductVariant {
   id          Int      @id @default(autoincrement())
   sku         String   @unique
@@ -130,7 +120,7 @@ model Category {
   documentId   String   @unique @default(uuid())
   categoryName String
   categoryPic  Json?    // { url: string }
-  type         String?  // "shirt" | "trouser"
+  type         String?  // "shirt" | "trouser" | "others"
   publishedAt  DateTime? @default(now())
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -222,7 +212,7 @@ model Cart {
 }
 
 // ============================================
-// CartItem (was Strapi component "cart.cart-item")
+// CartItem 
 // ============================================
 model CartItem {
   id            Int       @id @default(autoincrement())
@@ -282,7 +272,7 @@ model Transaction {
 }
 
 // ============================================
-// OrderItem (was Strapi component "order.order-item")
+// OrderItem
 // ============================================
 model OrderItem {
   id               Int      @id @default(autoincrement())

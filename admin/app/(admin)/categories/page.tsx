@@ -9,7 +9,7 @@ interface Category {
   categoryPic: { url: string } | null; publishedAt: string | null;
 }
 
-const TYPES = ['shirt', 'trouser', 'accessory', 'jacket', 'dress', 'shoes'];
+const TYPES = ['shirt', 'trouser', 'others'];
 
 export default function CategoriesPage() {
   const [items, setItems] = useState<Category[]>([]);

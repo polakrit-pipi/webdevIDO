@@ -14,7 +14,8 @@ export default function WishlistCard({ item, isAddingToCart, onRemove, onAddToCa
   if (!product) return null;
   const firstVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
   const productImageObj = firstVariant?.Image && firstVariant.Image.length > 0 ? firstVariant.Image[0] : null;
-  const imageUrl = productImageObj?.url ? `${process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337"}${productImageObj.url}` : "/placeholder-image.jpg";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:3001";
+  const imageUrl = productImageObj?.url ? (productImageObj.url.startsWith("http") ? productImageObj.url : `${apiUrl}${productImageObj.url}`) : "/placeholder-image.jpg";
   const price = firstVariant?.pricing || 0;
   const productName = product.ProductName || t("wishlist.unnamed");
 
