@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { Suspense } from "react";
 import { LanguageProvider } from "@/app/context/LanguageContext";
+import { CurrencyProvider } from "@/app/context/CurrencyContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,11 +34,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased grow`}
       >
        <LanguageProvider>
-         <Suspense fallback={<div className="h-16" />}>
-           <Navbar/>
-         </Suspense>
-         {children}
-         <Footer/>
+         <CurrencyProvider>
+           <Suspense fallback={<div className="h-16" />}>
+             <Navbar/>
+           </Suspense>
+           {children}
+           <Footer/>
+         </CurrencyProvider>
        </LanguageProvider>
       </body>
     </html>

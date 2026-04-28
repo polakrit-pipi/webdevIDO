@@ -2,6 +2,7 @@
 
 import { Transaction } from "@/types/types";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface OrderHistoryProps {
   orders: Transaction[];
@@ -9,6 +10,7 @@ interface OrderHistoryProps {
 
 export default function OrderHistory({ orders }: OrderHistoryProps) {
   const { locale, t } = useLanguage();
+  const { formatPrice } = useCurrency();
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
@@ -60,9 +62,8 @@ export default function OrderHistory({ orders }: OrderHistoryProps) {
               <p className="text-gray-500 text-sm">
                 {t("account.date")}: {formatDate(order.createdAt)} | {t("account.total")}:{" "}
                 {order.total_summary
-                  ? order.total_summary.toLocaleString()
-                  : "-"}{" "}
-                {t("account.baht")}
+                  ? formatPrice(order.total_summary)
+                  : "-"}
                 {order.tracking_info && ` | Tracking: ${order.tracking_info}`}
               </p>
             </div>

@@ -75,15 +75,30 @@ function buildRelationInclude(config: any): any {
 
   const result: any = { include: {} };
 
+  const isScalar = (field: string) => field === 'Image' || field === 'categoryPic';
+
   if (config.populate) {
-    for (const [field, fieldConfig] of Object.entries(config.populate)) {
-      if (typeof fieldConfig === 'string' && fieldConfig !== '*') {
-        // e.g., populate[variants][populate]=Image → include variants with Image
-        result.include[field] = true;
-      } else if (typeof fieldConfig === 'object') {
-        result.include[field] = buildRelationInclude(fieldConfig as any);
-      } else {
-        result.include[field] = true;
+    if (typeof config.populate === 'string') {
+      if (config.populate !== '*' && !isScalar(config.populate)) {
+        result.include[config.populate] = true;
+      }
+    } else if (Array.isArray(config.populate)) {
+      for (const field of config.populate) {
+        if (typeof field === 'string' && field !== '*' && !isScalar(field)) {
+          result.include[field] = true;
+        }
+      }
+    } else if (typeof config.populate === 'object') {
+      for (const [field, fieldConfig] of Object.entries(config.populate)) {
+        if (isScalar(field)) continue;
+        
+        if (typeof fieldConfig === 'string' && fieldConfig !== '*') {
+          result.include[field] = true;
+        } else if (typeof fieldConfig === 'object') {
+          result.include[field] = buildRelationInclude(fieldConfig as any);
+        } else {
+          result.include[field] = true;
+        }
       }
     }
   }

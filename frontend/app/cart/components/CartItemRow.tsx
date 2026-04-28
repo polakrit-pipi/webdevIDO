@@ -2,12 +2,14 @@
 import Image from "next/image";
 import { CartItem } from "@/types/types";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface CartItemRowProps { item: CartItem; isUpdating: boolean; onUpdateQty: (sku: string, change: number) => void; onRemove: (sku: string) => void; }
 
 export default function CartItemRow({ item, isUpdating, onUpdateQty, onRemove }: CartItemRowProps) {
   const { product, sku, quantity } = item;
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
 
   if (!product) {
     return (
@@ -25,7 +27,8 @@ export default function CartItemRow({ item, isUpdating, onUpdateQty, onRemove }:
   let imageObj = null;
   if (variant?.Image?.[0]) imageObj = variant.Image[0];
   else if (product.variants?.[0]?.Image?.[0]) imageObj = product.variants[0].Image[0];
-  const imageUrl = imageObj?.url ? `${process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337"}${imageObj.url}` : "/placeholder.jpg";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:3001";
+  const imageUrl = imageObj?.url ? (imageObj.url.startsWith("http") ? imageObj.url : `${apiUrl}${imageObj.url}`) : "/placeholder.jpg";
   const price = variant?.pricing || product.variants?.[0]?.pricing || 0;
 
   return (
@@ -39,7 +42,7 @@ export default function CartItemRow({ item, isUpdating, onUpdateQty, onRemove }:
             <h3 className="text-lg font-medium">{product.ProductName}</h3>
             <p className="text-sm text-gray-500 mt-1">SKU: {sku}</p>
           </div>
-          <p className="font-semibold text-lg">{price.toLocaleString()} THB</p>
+          <p className="font-semibold text-lg">{formatPrice(price)}</p>
         </div>
         <div className="flex justify-between items-end mt-4">
           <div className="flex items-center border rounded">

@@ -36,7 +36,7 @@ export default function Sidebar() {
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon"><Zap size={18} color="#fff" /></div>
         <div>
-          <div className="sidebar-logo-text">ideabyido</div>
+          <div className="sidebar-logo-text">ideabymuha</div>
           <div className="sidebar-logo-sub">Admin Panel</div>
         </div>
       </div>

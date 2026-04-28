@@ -23,6 +23,10 @@ COPY . .
 ARG NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
 ENV NEXT_PUBLIC_STRAPI_URL=$NEXT_PUBLIC_STRAPI_URL
 
+# Admin internal URL used by Next.js rewrites (baked at build time)
+ARG ADMIN_INTERNAL_URL=http://localhost:3001
+ENV ADMIN_INTERNAL_URL=$ADMIN_INTERNAL_URL
+
 RUN npm run build
 
 # --- Stage 3: Production image ---

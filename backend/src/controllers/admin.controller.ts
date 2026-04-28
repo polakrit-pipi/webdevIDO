@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/database';
 import { env } from '../config/env';
 import { signAdminToken } from '../middleware/adminAuth.middleware';
+import bcrypt from 'bcryptjs';
 
 /** Cast a route param (string | string[]) safely to an integer. */
 const pid = (param: string | string[]): number => parseInt(Array.isArray(param) ? param[0] : param, 10);
@@ -20,13 +21,42 @@ export const adminLogin = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
-    if (email !== env.ADMIN_EMAIL || password !== env.ADMIN_PASSWORD) {
+    const admin = await prisma.admin.findUnique({
+      where: { email },
+    });
+
+    if (!admin) {
+      // Create a failed login log (without adminId because admin not found)
+      // Since adminLoginLog requires an adminId, we might not log it here if admin doesn't exist, 
+      // or we can just return 401. Let's just return 401 to prevent user enumeration.
       res.status(401).json({ error: { message: 'Invalid credentials' } });
       return;
     }
 
-    const token = signAdminToken(email);
-    res.json({ token, email });
+    const isValidPassword = await bcrypt.compare(password, admin.password);
+
+    if (!isValidPassword) {
+      await prisma.adminLoginLog.create({
+        data: {
+          adminId: admin.id,
+          ipAddress: req.ip || req.socket.remoteAddress,
+          status: 'FAILED',
+        },
+      });
+      res.status(401).json({ error: { message: 'Invalid credentials' } });
+      return;
+    }
+
+    await prisma.adminLoginLog.create({
+      data: {
+        adminId: admin.id,
+        ipAddress: req.ip || req.socket.remoteAddress,
+        status: 'SUCCESS',
+      },
+    });
+
+    const token = signAdminToken(admin.email);
+    res.json({ token, email: admin.email, adminId: admin.id });
   } catch (err) {
     next(err);
   }

@@ -8,14 +8,14 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
 
   // Database
-  DATABASE_URL: process.env.DATABASE_URL || 'postgresql://idoidentity:idoidentity_pass@localhost:5432/db?schema=public',
+  DATABASE_URL: process.env.DATABASE_URL || 'postgresql://muhaidentity:muhaidentity_pass@localhost:5432/db?schema=public',
 
   // JWT
   JWT_SECRET: process.env.JWT_SECRET || 'DiRtebBIc961b6uGYGdk5A==',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '30d',
 
   // Admin
-  ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin@ideabyido.com',
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin@ideabymuha.com',
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || 'admin123',
   SESSION_SECRET: process.env.SESSION_SECRET || 'super-secret-session-key-change-in-production',
 

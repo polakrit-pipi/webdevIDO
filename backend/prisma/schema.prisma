@@ -1,7 +1,3 @@
-// ============================================
-// Prisma Schema — idoidentity backend
-// Maps all Strapi content types to clean relational models
-// ============================================
 
 generator client {
   provider = "prisma-client-js"
@@ -12,9 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
-// User (replaces Strapi users-permissions)
-// ============================================
 model User {
   id        Int      @id @default(autoincrement())
   documentId String  @unique @default(uuid())
@@ -38,6 +31,43 @@ model User {
   transactions Transaction[]
 
   @@map("users")
+}
+
+// ============================================
+// Administrator 
+// ============================================
+model Admin {
+  id        Int      @id @default(autoincrement())
+  documentId String  @unique @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  firstname String?
+  lastname  String?
+  address   Json?    // { line1, subdistrict, district, province, zipcode }
+  age       Int?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  loginLogs AdminLoginLog[]
+
+  @@map("admins")
+}
+
+// ============================================
+// Administrator Login Log 
+// ============================================
+model AdminLoginLog {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  loginTime DateTime @default(now())
+  ipAddress String?
+  status    String   @default("SUCCESS") // SUCCESS, FAILED
+  
+  @@map("admin_login_logs")
 }
 
 // ============================================
@@ -65,9 +95,6 @@ model Product {
   @@map("products")
 }
 
-// ============================================
-// ProductVariant (was Strapi component "elements.product-variants")
-// ============================================
 model ProductVariant {
   id          Int      @id @default(autoincrement())
   sku         String   @unique
@@ -93,7 +120,7 @@ model Category {
   documentId   String   @unique @default(uuid())
   categoryName String
   categoryPic  Json?    // { url: string }
-  type         String?  // "shirt" | "trouser"
+  type         String?  // "shirt" | "trouser" | "others"
   publishedAt  DateTime? @default(now())
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -185,7 +212,7 @@ model Cart {
 }
 
 // ============================================
-// CartItem (was Strapi component "cart.cart-item")
+// CartItem 
 // ============================================
 model CartItem {
   id            Int       @id @default(autoincrement())
@@ -245,7 +272,7 @@ model Transaction {
 }
 
 // ============================================
-// OrderItem (was Strapi component "order.order-item")
+// OrderItem
 // ============================================
 model OrderItem {
   id               Int      @id @default(autoincrement())

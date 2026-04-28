@@ -5,6 +5,7 @@ const en: Record<string, string> = {
   "nav.trouser": "Trousers",
   "nav.others": "Others",
   "nav.sale": "Sale",
+  "nav.team": "Team",
 
   // === Hero ===
   "hero.buyNow": "Shop Now",
@@ -22,7 +23,7 @@ const en: Record<string, string> = {
   "footer.subscribe": "Subscribe to Newsletter",
   "footer.specialOffer": "For Exclusive Offers",
   "footer.emailPlaceholder": "Email",
-  "footer.consent": "I want to receive email updates from IDOIDENTITY",
+  "footer.consent": "I want to receive email updates from MUHAIDENTITY",
   "footer.help": "Help",
   "footer.contactUs": "Contact Us",
   "footer.faq": "FAQ",
@@ -39,7 +40,7 @@ const en: Record<string, string> = {
 
   // === About Page ===
   "about.whoWeAre": "Who We Are",
-  "about.intro1": "IDOIDENTITY is a clothing brand focused on simplicity, modernity, and reflecting the wearer's identity.",
+  "about.intro1": "MUHAIDENTITY is a clothing brand focused on simplicity, modernity, and reflecting the wearer's identity.",
   "about.intro2": "We care about material quality and design for the best experience.",
   "about.detail1": "Designed for every lifestyle",
   "about.detail2": "Made with high-quality materials",

@@ -17,6 +17,9 @@ export async function createApp() {
   // ============================================
   // Core Middleware
   // ============================================
+  const qs = require('qs');
+  app.set('query parser', (str: string) => qs.parse(str, { depth: 20 }));
+
   app.use(cors({
     origin: true, // Allow all origins in dev; restrict in production
     credentials: true,

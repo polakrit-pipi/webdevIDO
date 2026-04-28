@@ -22,7 +22,6 @@ export const useNewProduct = () => {
         const json = await res.json();
         
         // Debug: ดูโครงสร้างข้อมูลจริงที่ได้จาก Strapi v5
-        console.log("Strapi Response:", json);
 
         const formattedData = (json.data || []).map((item: any) => {
             // Strapi v5 ไม่มี attributes แล้ว แต่โค้ดนี้เผื่อไว้ให้รองรับทั้ง v4/v5

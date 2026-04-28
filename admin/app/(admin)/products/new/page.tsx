@@ -164,23 +164,13 @@ export default function NewProductPage() {
                       </div>
                     </div>
 
-                    {/* Image upload */}
+                    {/* Image URL Input */}
                     <div style={{ marginTop: 8 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 6 }}>Variant Image</span>
-                      {v.imageUrl ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <img src={`${API_BASE}${v.imageUrl}`} alt="variant" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
-                          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setVariant(v._key, 'imageUrl', '')}>
-                            <X size={13} /> Remove
-                          </button>
-                        </div>
-                      ) : (
-                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '6px 12px', border: '1px dashed var(--border)', borderRadius: 8, fontSize: 13, color: 'var(--txt-muted)' }}>
-                          {v.uploading ? 'Uploading…' : <><Upload size={14} /> Upload Image</>}
-                          <input type="file" accept="image/*" style={{ display: 'none' }} disabled={v.uploading}
-                            onChange={e => { if (e.target.files?.[0]) uploadImage(v._key, e.target.files[0]); }} />
-                        </label>
-                      )}
+                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Image URL</span>
+                      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                        <input className="form-input" value={v.imageUrl} onChange={e => setVariant(v._key, 'imageUrl', e.target.value)} placeholder="https://img.freepik.com/..." style={{ flex: 1, fontSize: 13 }} />
+                        {v.imageUrl && <img src={v.imageUrl.startsWith('http') ? v.imageUrl : `${API_BASE}${v.imageUrl}`} alt="preview" style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4, border: '1px solid var(--border)' }} />}
+                      </div>
                     </div>
                   </div>
                 ))}

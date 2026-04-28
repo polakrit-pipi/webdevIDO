@@ -1,12 +1,12 @@
 'use client';
-import ProductCard from "../ui/product_card";
+import ProductCard from "@/app/product/components/features/ProductCard";
 import { useInView } from "@/lib/hooks/useInView";
 import { useProduct } from "@/hooks/useProduct";
 import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function Recommend_section() {
     const { ref, isVisible } = useInView();
-    const { products, recommended, isLoading } = useProduct();
+    const { products, recommended, isLoading, wishlistItems, toggleWishlist } = useProduct();
     const { t } = useLanguage();
 
     // Show recommended products if any exist, otherwise show all products
@@ -24,19 +24,16 @@ export default function Recommend_section() {
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {displayProducts.slice(0, 8).map((item: any) => {
-                            const variant = item.variants?.[0];
-                            const regularPrice = variant?.pricing ?? 0;
-                            const salePrice = variant?.salePricing ?? 0;
-                            const finalPrice = (salePrice > 0 && salePrice < regularPrice) ? salePrice : regularPrice;
-                            // Image stored as [{url: "/uploads/..."}]
-                            const imgArr = variant?.Image;
-                            const imgPath = Array.isArray(imgArr) ? imgArr[0]?.url : imgArr?.url;
-                            const apiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
-                            const fullImageUrl = imgPath
-                                ? (imgPath.startsWith("http") ? imgPath : `${apiUrl}${imgPath}`)
-                                : '/placeholder.png';
+                            const isWishlisted = wishlistItems.some(
+                                w => w.product?.documentId === item.documentId
+                            );
                             return (
-                                <ProductCard key={item.documentId || item.id} name={item.ProductName} price={finalPrice} imageUrl={fullImageUrl} />
+                                <ProductCard 
+                                    key={item.documentId || item.id} 
+                                    product={item} 
+                                    isWishlisted={isWishlisted} 
+                                    onToggleWishlist={toggleWishlist} 
+                                />
                             );
                         })}
                     </div>

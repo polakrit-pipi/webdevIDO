@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { getColors } from "../app/context/ColorContext";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 interface ProductActionProps {
     product: {
@@ -22,6 +23,7 @@ export default function ProductAction({ product }: ProductActionProps) {
     const [quantity, setQuantity] = useState(1);
     const [colors, setColors] = useState(null);
     const { t } = useLanguage();
+    const { formatPrice } = useCurrency();
 
     useEffect(() => {
         async function fetchData() {
@@ -64,6 +66,8 @@ export default function ProductAction({ product }: ProductActionProps) {
 
     
     const displayPrice = activeVariant ? activeVariant.pricing : product.basePrice;
+    const displaySalePrice = activeVariant?.salePricing || 0;
+    const isSale = displaySalePrice > 0 && displaySalePrice < displayPrice;
     
     const handleIncrement = () => setQuantity((p) => p + 1);
     const handleDecrement = () => setQuantity((p) => (p > 1 ? p - 1 : 1));
@@ -76,7 +80,8 @@ export default function ProductAction({ product }: ProductActionProps) {
         }
 
         try {
-            const response = await fetch("http://localhost:1337/api/wishlists", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:3001";
+            const response = await fetch(`${apiUrl}/api/wishlists`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -103,7 +108,7 @@ export default function ProductAction({ product }: ProductActionProps) {
     };
 const handleAddToCart = async () => {
     const token = localStorage.getItem("token");
-    const apiUrl = "http://localhost:1337";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:3001";
 
     if (!token) {
         alert("Please login first");
@@ -208,11 +213,21 @@ const handleAddToCart = async () => {
             <div className=" w-[50vw] ">
                 <p className="text-[2vw]">{product.name}</p>
                 <p className="text-[1vw] text-[#716F71]">{t("detail.productCode")}: ABC-DEF-GHI</p>
-                <div className="flex items-baseline">
-                    <p className="text-[2vw] text-[#5F4B8B] py-[1.5vw]">
-                        {displayPrice.toLocaleString()} {t("detail.baht")}
-                    </p>
-                    <p className="ml-[1vw] text-[1vw] text-[#716F71] line-through">1,290 {t("detail.baht")}</p>
+                <div className="flex items-baseline gap-3">
+                    {isSale ? (
+                        <>
+                            <p className="text-[2vw] text-red-600 py-[1.5vw]">
+                                {formatPrice(displaySalePrice)}
+                            </p>
+                            <p className="text-[1vw] text-[#716F71] line-through">
+                                {formatPrice(displayPrice)}
+                            </p>
+                        </>
+                    ) : (
+                        <p className="text-[2vw] text-[#5F4B8B] py-[1.5vw]">
+                            {formatPrice(displayPrice)}
+                        </p>
+                    )}
                 </div>
                 
                 <p className="text-[1vw] text-[#716F71] ">{t("detail.selectColor")}: {selectedColor}</p>

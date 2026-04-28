@@ -3,21 +3,21 @@ services:
   # 1. Database (PostgreSQL)
   # ============================================
   postgres:
-    container_name: ideabyido-db
+    container_name: ideabymuha-db
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-idoidentity}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-idoidentity_pass}
+      POSTGRES_USER: ${DB_USER:-muhaidentity}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-muhaidentity_pass}
       POSTGRES_DB: ${DB_NAME:-db}
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - idoidentity-network
+      - muhaidentity-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-idoidentity} -d ${DB_NAME:-db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-muhaidentity} -d ${DB_NAME:-db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,19 +27,19 @@ services:
   # 2. Express.js Backend (API)
   # ============================================
   backend:
-    container_name: ideabyido-backend
+    container_name: ideabymuha-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://${DB_USER:-idoidentity}:${DB_PASSWORD:-idoidentity_pass}@postgres:5432/${DB_NAME:-db}?schema=public
+      DATABASE_URL: postgresql://${DB_USER:-muhaidentity}:${DB_PASSWORD:-muhaidentity_pass}@postgres:5432/${DB_NAME:-db}?schema=public
       PORT: 1337
       HOST: 0.0.0.0
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET:-DiRtebBIc961b6uGYGdk5A==}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-30d}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@ideabyido.com}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@ideabymuha.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
       SESSION_SECRET: ${SESSION_SECRET:-super-secret-session-key-prod}
       UPLOAD_DIR: ./public/uploads
@@ -51,7 +51,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - idoidentity-network
+      - muhaidentity-network
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:1337/health || exit 1"]
       interval: 15s
@@ -60,10 +60,10 @@ services:
       start_period: 30s
 
   # ============================================
-  # 3. Next.js Admin Dashboard
+  # 3. Next.js Admin Dashboard (internal only)
   # ============================================
   admin:
-    container_name: ideabyido-admin
+    container_name: ideabymuha-admin
     build:
       context: ./admin
       dockerfile: Dockerfile
@@ -72,26 +72,26 @@ services:
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:1337
-      PORT: 3001
+      PORT: 3000
       HOSTNAME: "0.0.0.0"
-    ports:
-      - "3001:3001"
+    # No external port — accessed through the frontend proxy at /admin
     depends_on:
       backend:
         condition: service_healthy
     networks:
-      - idoidentity-network
+      - muhaidentity-network
 
   # ============================================
   # 4. Next.js Frontend (Customer-facing Store)
   # ============================================
   frontend:
-    container_name: ideabyido-frontend
+    container_name: ideabymuha-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+        ADMIN_INTERNAL_URL: http://admin:3000
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -99,13 +99,16 @@ services:
       HOSTNAME: "0.0.0.0"
       NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
       STRAPI_INTERNAL_URL: http://backend:1337
+      ADMIN_INTERNAL_URL: http://admin:3000
     ports:
       - "3000:3000"
     depends_on:
       backend:
         condition: service_healthy
+      admin:
+        condition: service_started
     networks:
-      - idoidentity-network
+      - muhaidentity-network
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000 || exit 1"]
       interval: 20s
@@ -127,5 +130,5 @@ volumes:
 # Network
 # ============================================
 networks:
-  idoidentity-network:
+  muhaidentity-network:
     driver: bridge
