@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "ideabymuha Admin",
-  description: "Admin dashboard for ideabymuha",
+  title: "idoidentity Admin",
+  description: "Admin dashboard for idoidentity",
 };
 
 export default function RootLayout({

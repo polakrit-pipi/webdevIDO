@@ -74,7 +74,7 @@ export default function TeamPage() {
           Our Team
         </h1>
         <p style={{ color: "#716F71", fontSize: "1rem", maxWidth: 480, margin: "0 auto" }}>
-          Meet the people behind MUHAIDENTITY — the team that designs, builds, and maintains this platform.
+          Meet the people behind IDOIDENTITY — the team that designs, builds, and maintains this platform.
         </p>
       </header>
 

@@ -145,7 +145,7 @@ export default function Navbar() {
         {/* mid */}
         <div className="flex flex-col gap-1.5 w-[20vw] text-center justify-center items-center">
           <Link href={'/'}>
-            <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[2vw]' : 'text-[2.7vw]'}`}>MUHAIDENTITY</p>
+            <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[2vw]' : 'text-[2.7vw]'}`}>IDOIDENTITY</p>
             <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[1vw]' : 'text-[1.3vw]'}`}>BANGKOK</p>
           </Link>
         </div>
