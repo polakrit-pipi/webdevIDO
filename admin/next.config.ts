@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
         port: '1337',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'webdevido.onrender.com',
+        pathname: '/uploads/**',
+      },
     ],
     unoptimized: true,
   },

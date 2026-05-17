@@ -43,6 +43,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'webdevido.onrender.com',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'img.freepik.com',
         pathname: '/**',
       },
