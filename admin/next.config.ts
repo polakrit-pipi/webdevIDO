@@ -2,17 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  basePath: '/admin',
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/admin',
-        permanent: false,
-        basePath: false,
-      },
-    ];
-  },
   images: {
     remotePatterns: [
       {
