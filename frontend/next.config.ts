@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // 'standalone' is needed for Docker but breaks Vercel — skip it there
+  output: process.env.VERCEL ? undefined : 'standalone',
   async rewrites() {
+    // On Vercel there's no admin container — skip these rewrites
+    if (process.env.VERCEL) return [];
     const adminUrl = process.env.ADMIN_INTERNAL_URL || 'http://localhost:3001';
     return [
       {
