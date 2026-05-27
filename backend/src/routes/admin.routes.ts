@@ -12,7 +12,7 @@ import {
   adminGetCategories, adminCreateCategory, adminUpdateCategory, adminDeleteCategory,
   adminGetCollections, adminCreateCollection, adminUpdateCollection, adminDeleteCollection,
   adminGetBanners, adminCreateBanner, adminUpdateBanner, adminDeleteBanner,
-  adminGetColors, adminUpdateColor,
+  adminGetColors, adminUpdateColor, adminGetVariantColors,
   adminGetNewProducts, adminCreateNewProduct, adminUpdateNewProduct, adminDeleteNewProduct,
   adminGetUsers, adminGetUser,
   adminGetOrders, adminGetOrder, adminUpdateOrderStatus,
@@ -76,6 +76,7 @@ router.delete('/banners/:id', adminDeleteBanner);
 // Colors
 router.get('/colors', adminGetColors);
 router.put('/colors/:id', adminUpdateColor);
+router.get('/variant-colors', adminGetVariantColors);
 
 // New Products
 router.get('/new-products', adminGetNewProducts);

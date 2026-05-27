@@ -429,6 +429,20 @@ export const adminUpdateColor = async (req: Request, res: Response, next: NextFu
   } catch (err) { next(err); }
 };
 
+/** GET /api/admin/variant-colors — all unique color strings used in product variants */
+export const adminGetVariantColors = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const rows = await prisma.productVariant.findMany({
+      where: { color: { not: null } },
+      select: { color: true },
+      distinct: ['color'],
+      orderBy: { color: 'asc' },
+    });
+    const colors = rows.map(r => r.color).filter(Boolean) as string[];
+    res.json(colors);
+  } catch (err) { next(err); }
+};
+
 // ============================================================
 // NEW PRODUCTS (Featured/New Arrivals)
 // ============================================================

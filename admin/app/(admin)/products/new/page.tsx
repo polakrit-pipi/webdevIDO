@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Plus, Trash2, ArrowLeft, Upload, X } from 'lucide-react';
 import api from '@/lib/api';
+import ColorPicker from '@/components/ColorPicker';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
 
@@ -137,7 +138,11 @@ export default function NewProductPage() {
                       </div>
                       <div>
                         <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Color</span>
-                        <input className="form-input" value={v.color} onChange={e => setVariant(v._key, 'color', e.target.value)} placeholder="Black" style={{ fontSize: 13 }} />
+                        <ColorPicker
+                          compact
+                          value={v.color}
+                          onChange={val => setVariant(v._key, 'color', val)}
+                        />
                       </div>
                       <div>
                         <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Size</span>

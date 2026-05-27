@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import api from '@/lib/api';
+import ColorPicker from '@/components/ColorPicker';
 
 interface Variant {
   id: number; sku: string; color: string | null; size: string | null;
@@ -154,7 +155,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 <div key={v._key} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 16, marginBottom: 12 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px 100px 36px', gap: '6px 8px', marginBottom: 8 }}>
                     <input className="form-input" value={v.sku} onChange={e => setVField(v._key, 'sku', e.target.value)} style={{ fontSize: 13 }} />
-                    <input className="form-input" value={v.color ?? ''} onChange={e => setVField(v._key, 'color', e.target.value)} style={{ fontSize: 13 }} />
+                    <div>
+                      <ColorPicker
+                        compact
+                        value={v.color ?? ''}
+                        onChange={val => setVField(v._key, 'color', val)}
+                      />
+                    </div>
                     <input className="form-input" value={v.size ?? ''} onChange={e => setVField(v._key, 'size', e.target.value)} style={{ fontSize: 13 }} />
                     <input className="form-input" type="number" value={v.stockqty ?? 0} onChange={e => setVField(v._key, 'stockqty', e.target.value)} style={{ fontSize: 13 }} />
                     <input className="form-input" type="number" value={v.pricing} onChange={e => setVField(v._key, 'pricing', e.target.value)} style={{ fontSize: 13 }} />
