@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Use standalone only for Docker (not on Vercel)
-  output: process.env.VERCEL ? undefined : 'standalone',
+  // Required for Docker multi-stage build (Dockerfile copies .next/standalone)
+  output: 'standalone',
   images: {
     remotePatterns: [
       {

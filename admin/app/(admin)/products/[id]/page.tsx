@@ -166,7 +166,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Image URL</span>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                       <input className="form-input" value={v.imageUrl} onChange={e => setVField(v._key, 'imageUrl', e.target.value)} placeholder="https://img.freepik.com/..." style={{ flex: 1, fontSize: 13 }} />
-                      {v.imageUrl && <img src={v.imageUrl.startsWith('http') ? v.imageUrl : `http://localhost:1337${v.imageUrl}`} alt="preview" style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4, border: '1px solid var(--border)' }} />}
+                      {v.imageUrl && <img src={v.imageUrl.startsWith('http') ? v.imageUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337'}${v.imageUrl}`} alt="preview" style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4, border: '1px solid var(--border)' }} />}
                     </div>
                   </div>
                 </div>

@@ -225,7 +225,7 @@ export const useProduct = () => {
     try {
       if (existingItem) {
         // --- DELETE (เหมือนเดิม) ---
-        const res = await fetch(`http://localhost:1337/api/wishlists/${existingItem.documentId}`, {
+        const res = await fetch(`${API_URL}/api/wishlists/${existingItem.documentId}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -246,7 +246,7 @@ export const useProduct = () => {
 
         console.log("Sending POST:", payload);
 
-        const res = await fetch("http://localhost:1337/api/wishlists", {
+        const res = await fetch(`${API_URL}/api/wishlists`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload)

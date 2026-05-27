@@ -68,13 +68,17 @@ services:
       context: ./admin
       dockerfile: Dockerfile
       args:
+        # NEXT_PUBLIC_API_URL is baked at build time — must be the public-facing URL
+        # so the browser (not the container) can reach the backend.
         NEXT_PUBLIC_API_URL: http://localhost:1337
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:1337
-      PORT: 3000
+      # Admin Dockerfile sets PORT=3001 — keep in sync
+      PORT: 3001
       HOSTNAME: "0.0.0.0"
-    # No external port — accessed through the frontend proxy at /admin
+    ports:
+      - "3001:3001"
     depends_on:
       backend:
         condition: service_healthy
@@ -91,7 +95,8 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
-        ADMIN_INTERNAL_URL: http://admin:3000
+        # Point proxy rewrites to admin's actual internal port (3001)
+        ADMIN_INTERNAL_URL: http://admin:3001
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -99,7 +104,8 @@ services:
       HOSTNAME: "0.0.0.0"
       NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
       STRAPI_INTERNAL_URL: http://backend:1337
-      ADMIN_INTERNAL_URL: http://admin:3000
+      # Must match the admin container's actual port
+      ADMIN_INTERNAL_URL: http://admin:3001
     ports:
       - "3000:3000"
     depends_on:
