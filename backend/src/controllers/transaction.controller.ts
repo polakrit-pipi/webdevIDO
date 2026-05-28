@@ -105,7 +105,7 @@ export const createTransaction = async (req: Request, res: Response, next: NextF
  */
 export const submitSlip = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { documentId } = req.params;
+    const documentId = req.params.documentId as string;
     const userId = req.user?.id;
     const { slip_url, slip_transferred_at } = req.body;
 
