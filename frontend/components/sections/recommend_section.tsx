@@ -14,13 +14,37 @@ export default function Recommend_section() {
     const sectionTitle = recommended.length > 0 ? t("section.recommend") : "Our Products";
 
     return (
-        <section className={`w-full flex mt-[5vw] justify-center fade-section ${isVisible ? 'fade-section-visible' : ''}`} ref={ref}>
+        <section
+            aria-labelledby="recommend-heading"
+            className={`w-full flex mt-[5vw] justify-center fade-section ${isVisible ? 'fade-section-visible' : ''}`}
+            ref={ref}
+        >
             <div className='text-center w-full max-w-7xl mx-auto px-4 pb-16'>
-                <h2 className="text-[2.5vw] md:text-3xl font-bold mb-[3vw]">{sectionTitle}</h2>
+                <h2
+                    id="recommend-heading"
+                    className="text-3xl md:text-[2.5vw] font-bold mb-8 md:mb-[3vw] tracking-tight leading-tight"
+                >
+                    {sectionTitle}
+                </h2>
                 {isLoading ? (
-                    <p>Loading...</p>
+                    <div
+                        role="status"
+                        aria-live="polite"
+                        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                    >
+                        {Array.from({ length: 8 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="aspect-[3/4] bg-neutral-100 rounded-md animate-pulse"
+                                aria-hidden="true"
+                            />
+                        ))}
+                        <span className="sr-only">{t("product.loading") || "Loading..."}</span>
+                    </div>
                 ) : displayProducts.length === 0 ? (
-                    <p className="text-gray-400 text-lg">No products yet. Add some from the admin panel.</p>
+                    <p className="text-gray-500 text-base md:text-lg py-12">
+                        No products yet. Add some from the admin panel.
+                    </p>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {displayProducts.slice(0, 8).map((item: any) => {
@@ -28,11 +52,11 @@ export default function Recommend_section() {
                                 w => w.product?.documentId === item.documentId
                             );
                             return (
-                                <ProductCard 
-                                    key={item.documentId || item.id} 
-                                    product={item} 
-                                    isWishlisted={isWishlisted} 
-                                    onToggleWishlist={toggleWishlist} 
+                                <ProductCard
+                                    key={item.documentId || item.id}
+                                    product={item}
+                                    isWishlisted={isWishlisted}
+                                    onToggleWishlist={toggleWishlist}
                                 />
                             );
                         })}

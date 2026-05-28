@@ -24,12 +24,13 @@ const Button = ({
   link,
 }: ButtonProps) => {
   return (
-    <Link href={link}>
-    <button
-      className={`${bg} ${text} ${hoverBg} ${hoverText} ${px} ${py} ${text_size} rounded-4xl transition-colors duration-300 cursor-pointer`}
-    >
-      {label}
-    </button>
+    <Link href={link} className="inline-block">
+      <button
+        type="button"
+        className={`${bg} ${text} ${hoverBg} ${hoverText} ${px} ${py} ${text_size} rounded-4xl transition-colors duration-300 cursor-pointer min-h-[44px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5F4B8B] active:scale-[0.98] transition-transform`}
+      >
+        {label}
+      </button>
     </Link>
   );
 };

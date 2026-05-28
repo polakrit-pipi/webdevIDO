@@ -5,7 +5,6 @@ const en: Record<string, string> = {
   "nav.trouser": "Trousers",
   "nav.others": "Others",
   "nav.sale": "Sale",
-  "nav.team": "Team",
 
   // === Hero ===
   "hero.buyNow": "Shop Now",

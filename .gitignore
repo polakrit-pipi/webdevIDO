@@ -1,2 +1,10 @@
 postgres-data/
 .DS_Store
+
+# Environment files (keep .env.example, ignore real .env)
+.env
+.env.local
+.env.*.local
+**/.env
+!.env.example
+!**/.env.example
