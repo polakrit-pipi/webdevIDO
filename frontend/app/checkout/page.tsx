@@ -90,7 +90,7 @@ export default function CheckoutPage() {
       setUploading(true);
       const formData = new FormData();
       formData.append('file', slipFile);
-      const uploadRes = await fetch(`${API_URL}/api/admin/upload`, {
+      const uploadRes = await fetch(`${API_URL}/api/transactions/upload-slip`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
