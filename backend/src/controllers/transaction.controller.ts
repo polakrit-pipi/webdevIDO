@@ -11,13 +11,8 @@ export const getTransactions = async (req: Request, res: Response, next: NextFun
     const userId = req.user?.id;
 
     const transactions = await prisma.transaction.findMany({
-      where: {
-        userId,
-        publishedAt: { not: null },
-      },
-      include: {
-        items: { include: { product: true } },
-      },
+      where: { userId, publishedAt: { not: null } },
+      include: { items: { include: { product: true } } },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -36,9 +31,7 @@ export const getTransaction = async (req: Request, res: Response, next: NextFunc
 
     const transaction = await prisma.transaction.findUnique({
       where: { documentId },
-      include: {
-        items: { include: { product: true } },
-      },
+      include: { items: { include: { product: true } } },
     });
 
     if (!transaction) {
@@ -66,7 +59,6 @@ export const createTransaction = async (req: Request, res: Response, next: NextF
       return;
     }
 
-    // Resolve order items
     const orderItems = await Promise.all(
       (data.items || []).map(async (item: any) => {
         let productId: number | null = null;
@@ -78,7 +70,6 @@ export const createTransaction = async (req: Request, res: Response, next: NextF
             productId = product?.id || null;
           }
         }
-
         return {
           quantity: item.quantity || 1,
           price_at_purchase: item.price_at_purchase,
@@ -91,18 +82,57 @@ export const createTransaction = async (req: Request, res: Response, next: NextF
     const transaction = await prisma.transaction.create({
       data: {
         userId,
-        order_status: data.order_status || 'Pending',
+        order_status: 'Pending',
+        payment_status: 'unpaid',
         total_summary: data.total_summary,
         tracking_info: data.tracking_info,
         publishedAt: new Date(),
         items: { create: orderItems },
       },
-      include: {
-        items: { include: { product: true } },
-      },
+      include: { items: { include: { product: true } } },
     });
 
     res.status(201).json(wrapSingle(transaction));
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * PUT /api/transactions/:documentId/slip
+ * User submits payment slip after bank transfer.
+ * Body: { slip_url: string, slip_transferred_at: string (ISO datetime) }
+ */
+export const submitSlip = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { documentId } = req.params;
+    const userId = req.user?.id;
+    const { slip_url, slip_transferred_at } = req.body;
+
+    if (!slip_url || !slip_transferred_at) {
+      res.status(400).json({ error: { message: 'slip_url and slip_transferred_at are required' } });
+      return;
+    }
+
+    const tx = await prisma.transaction.findUnique({ where: { documentId } });
+    if (!tx) { res.status(404).json({ error: { message: 'Transaction not found' } }); return; }
+    if (tx.userId !== userId) { res.status(403).json({ error: { message: 'Forbidden' } }); return; }
+    if (tx.payment_status === 'confirmed') {
+      res.status(400).json({ error: { message: 'Payment already confirmed' } });
+      return;
+    }
+
+    const updated = await prisma.transaction.update({
+      where: { documentId },
+      data: {
+        slip_url,
+        slip_transferred_at: new Date(slip_transferred_at),
+        payment_status: 'slip_submitted',
+      },
+      include: { items: { include: { product: true } } },
+    });
+
+    res.json(wrapSingle(updated));
   } catch (error) {
     next(error);
   }

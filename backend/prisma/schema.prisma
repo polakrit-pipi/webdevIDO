@@ -256,9 +256,12 @@ model Wishlist {
 model Transaction {
   id             Int       @id @default(autoincrement())
   documentId     String    @unique @default(uuid())
-  order_status   String?   @default("Pending") // Pending, Shipped, Delivered, Cancelled
+  order_status   String?   @default("Pending") // Pending, Processing, Shipped, Delivered, Cancelled
+  payment_status String?   @default("unpaid")  // unpaid, slip_submitted, confirmed, rejected
   total_summary  Decimal?
   tracking_info  String?
+  slip_url       String?   // path to uploaded slip image
+  slip_transferred_at DateTime? // transfer time entered by user
   publishedAt    DateTime? @default(now())
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt

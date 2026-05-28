@@ -539,9 +539,12 @@ export const adminGetUser = async (req: Request, res: Response, next: NextFuncti
 /** GET /api/admin/orders */
 export const adminGetOrders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { status } = req.query;
+    const { status, payment } = req.query;
     const orders = await prisma.transaction.findMany({
-      where: status ? { order_status: status as string } : undefined,
+      where: {
+        ...(status ? { order_status: status as string } : {}),
+        ...(payment ? { payment_status: payment as string } : {}),
+      },
       include: {
         user: { select: { id: true, username: true, email: true } },
         items: { include: { product: { select: { id: true, ProductName: true } } } },
@@ -585,6 +588,33 @@ export const adminUpdateOrderStatus = async (req: Request, res: Response, next: 
       data: {
         ...(order_status !== undefined && { order_status }),
         ...(tracking_info !== undefined && { tracking_info }),
+      },
+    });
+    res.json(order);
+  } catch (err) { next(err); }
+};
+
+/** PUT /api/admin/orders/:id/payment — admin confirms or rejects a slip */
+export const adminVerifyPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const id = pid(req.params.id);
+    const { action } = req.body; // 'confirm' | 'reject'
+
+    if (!['confirm', 'reject'].includes(action)) {
+      res.status(400).json({ error: { message: 'action must be confirm or reject' } });
+      return;
+    }
+
+    const order = await prisma.transaction.update({
+      where: { id },
+      data: {
+        payment_status: action === 'confirm' ? 'confirmed' : 'rejected',
+        // Auto-advance order status when payment is confirmed
+        ...(action === 'confirm' && { order_status: 'Processing' }),
+      },
+      include: {
+        user: { select: { id: true, username: true, email: true } },
+        items: { include: { product: { select: { id: true, ProductName: true } } } },
       },
     });
     res.json(order);

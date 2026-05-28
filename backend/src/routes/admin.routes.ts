@@ -15,7 +15,7 @@ import {
   adminGetColors, adminUpdateColor, adminGetVariantColors,
   adminGetNewProducts, adminCreateNewProduct, adminUpdateNewProduct, adminDeleteNewProduct,
   adminGetUsers, adminGetUser,
-  adminGetOrders, adminGetOrder, adminUpdateOrderStatus,
+  adminGetOrders, adminGetOrder, adminUpdateOrderStatus, adminVerifyPayment,
   adminUploadFile,
 } from '../controllers/admin.controller';
 
@@ -92,6 +92,7 @@ router.get('/users/:id', adminGetUser);
 router.get('/orders', adminGetOrders);
 router.get('/orders/:id', adminGetOrder);
 router.put('/orders/:id/status', adminUpdateOrderStatus);
+router.put('/orders/:id/payment', adminVerifyPayment);
 
 // File Upload
 router.post('/upload', upload.single('file'), adminUploadFile);
