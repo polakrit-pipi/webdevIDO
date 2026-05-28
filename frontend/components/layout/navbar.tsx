@@ -35,7 +35,7 @@ function CurrencySwitcher() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center font-bold text-[0.8vw] opacity-70 hover:opacity-100 transition-opacity tabular-nums-fixed min-w-[44px] min-h-[44px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5F4B8B] rounded-sm"
+        className="flex items-center justify-center font-bold text-[0.8vw] opacity-70 hover:opacity-100 transition-opacity tabular-nums-fixed focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
         aria-label={`Change currency, current ${currency}`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -94,12 +94,12 @@ function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-[1.3vw] h-[1.3vw] min-w-[44px] min-h-[44px] opacity-70 hover:opacity-100 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5F4B8B] rounded-sm"
+        className="flex items-center justify-center w-[1.3vw] h-[1.3vw] opacity-70 hover:opacity-100 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
         aria-label={`Change language, current ${locale === "th" ? "Thai" : "English"}`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[1.3vw] h-[1.3vw] min-w-[18px] min-h-[18px]" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
         </svg>
       </button>
@@ -179,9 +179,15 @@ export default function Navbar() {
 
       {/* mid — wordmark */}
       <div className="flex flex-col gap-1.5 w-[20vw] text-center justify-center items-center">
-        <Link href={'/'} aria-label="IDOIDENTITY Bangkok — Home" className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm">
-          <p lang="en" className={`leading-none transition-all duration-300 tracking-tight ${isScrolled ? 'text-[2vw]' : 'text-[2.7vw]'}`}>IDOIDENTITY</p>
-          <p lang="en" className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[1vw]' : 'text-[1.3vw]'}`}>BANGKOK</p>
+        <Link
+          href={'/'}
+          aria-label="IDOIDENTITY Bangkok — Home"
+          lang="en"
+          className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
+          style={{ fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif', lineHeight: 1 }}
+        >
+          <p className={`leading-none transition-all duration-300 tracking-tight ${isScrolled ? 'text-[2vw]' : 'text-[2.7vw]'}`}>IDOIDENTITY</p>
+          <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[1vw]' : 'text-[1.3vw]'}`}>BANGKOK</p>
         </Link>
       </div>
 
@@ -189,12 +195,10 @@ export default function Navbar() {
       <div className="flex items-center justify-between pr-[3vw] w-[22vw] absolute right-0">
         <Link
           href={'/account/'}
-          aria-label={t('nav.recommend') ? 'Account' : 'Account'}
-          className="flex items-center justify-center min-w-[44px] min-h-[44px] hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5F4B8B] rounded-sm"
+          aria-label="Account"
+          className="w-[1.1vw] h-[1.1vw] relative hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
         >
-          <span className="w-[1.1vw] h-[1.1vw] min-w-[18px] min-h-[18px] relative block">
-            <Image src='/user-info-icon.png' fill alt="" aria-hidden="true" className="object-contain" />
-          </span>
+          <Image src='/user-info-icon.png' fill alt="" aria-hidden="true" className="object-contain" />
         </Link>
 
         <Search isScrolled={isScrolled} />
@@ -202,30 +206,26 @@ export default function Navbar() {
         <Link
           href={'/wishlist/'}
           aria-label="Wishlist"
-          className="flex items-center justify-center min-w-[44px] min-h-[44px] hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5F4B8B] rounded-sm"
+          className="w-[1.1vw] h-[1.1vw] relative hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
         >
-          <span className="w-[1.1vw] h-[1.1vw] min-w-[18px] min-h-[18px] relative block">
-            <Image src='/wishlist-icon.png' fill alt="" aria-hidden="true" className="object-contain" />
-          </span>
+          <Image src='/wishlist-icon.png' fill alt="" aria-hidden="true" className="object-contain" />
         </Link>
 
         <Link
           href={'/cart/'}
           aria-label="Cart"
-          className="flex items-center justify-center min-w-[44px] min-h-[44px] hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5F4B8B] rounded-sm"
+          className="w-[1.1vw] h-[1.1vw] relative hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
         >
-          <span className="w-[1.1vw] h-[1.1vw] min-w-[18px] min-h-[18px] relative block">
-            <Image src='/cart-icon.png' fill alt="" aria-hidden="true" className="object-contain" />
-          </span>
+          <Image src='/cart-icon.png' fill alt="" aria-hidden="true" className="object-contain" />
         </Link>
 
         {/* Admin link — must use <a> for full page nav across the rewrite boundary */}
         <a
           href="/admin/login"
           aria-label="Admin"
-          className="flex items-center justify-center min-w-[44px] min-h-[44px] hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5F4B8B] rounded-sm"
+          className="w-[1.1vw] h-[1.1vw] relative flex items-center justify-center hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[1.1vw] h-[1.1vw] min-w-[18px] min-h-[18px] text-gray-700" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full text-gray-700" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
           </svg>
         </a>

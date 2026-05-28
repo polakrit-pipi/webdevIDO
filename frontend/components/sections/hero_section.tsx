@@ -48,7 +48,7 @@ export default function Hero_section() {
         >
           &ldquo;IDENTITY&rdquo;
         </h1>
-        <div className="flex flex-wrap justify-center gap-4 md:gap-[4vw]">
+        <div className="flex flex-wrap justify-center gap-[4vw]">
           <Button
             bg="bg-neutral-900 border-1 border-black"
             text="text-white"

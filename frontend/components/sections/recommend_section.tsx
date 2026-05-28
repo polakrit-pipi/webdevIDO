@@ -22,7 +22,7 @@ export default function Recommend_section() {
             <div className='text-center w-full max-w-7xl mx-auto px-4 pb-16'>
                 <h2
                     id="recommend-heading"
-                    className="text-3xl md:text-[2.5vw] font-bold mb-8 md:mb-[3vw] tracking-tight leading-tight"
+                    className="text-2xl md:text-[2.5vw] font-bold mb-[3vw]"
                 >
                     {sectionTitle}
                 </h2>
