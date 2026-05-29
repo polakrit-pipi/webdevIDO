@@ -233,7 +233,7 @@ const handleAddToCart = async () => {
                 <p className="text-[1vw] text-[#716F71] ">{t("detail.selectColor")}: {selectedColor}</p>
                 <div className="flex gap-2">
                     {product.colors.map((color) => {
-                        const hexCode = colors ? colors[color] : "#cccccc";
+                        const hexCode = (colors && colors[color]) ? colors[color] : color;
                         return(
                            <div
                             key={color}
