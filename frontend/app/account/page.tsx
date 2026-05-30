@@ -34,10 +34,13 @@ export default function ProfilePage() {
       }
 
       try {
-        const userRes = await fetch(`${apiUrl}/api/users/me?populate=transactions`, {
-          headers: { Authorization: `Bearer ${token}` },
-          cache: "no-store",
-        });
+        const userRes = await fetch(
+          `${apiUrl}/api/users/me?populate[transactions][populate][items][populate]=product`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: "no-store",
+          }
+        );
 
         if (!userRes.ok) {
           throw new Error("User session expired");

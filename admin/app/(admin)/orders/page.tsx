@@ -10,12 +10,17 @@ interface OrderItem {
   id: number; quantity: number; price_at_purchase: string | null;
   selected_sku: string | null; product: { id: number; ProductName: string } | null;
 }
+interface ShippingAddress {
+  name?: string; phone?: string; line1: string;
+  subdistrict: string; district: string; province: string; zipcode: string;
+}
 interface Order {
   id: number; order_status: string | null; payment_status: string | null;
   total_summary: string | null; tracking_info: string | null;
   slip_url: string | null; slip_transferred_at: string | null;
+  shipping_address: ShippingAddress | null;
   createdAt: string;
-  user: { id: number; username: string; email: string };
+  user: { id: number; username: string; email: string; phone?: string; address?: any };
   items: OrderItem[];
 }
 
@@ -59,8 +64,16 @@ export default function OrdersPage() {
 
   useEffect(() => { load(); }, [filterStatus, filterPayment]);
 
-  function openDetail(o: Order) {
-    setDetail(o); setNewStatus(o.order_status ?? ''); setTracking(o.tracking_info ?? '');
+  async function openDetail(o: Order) {
+    setNewStatus(o.order_status ?? '');
+    setTracking(o.tracking_info ?? '');
+    // Fetch full order detail to get shipping_address
+    try {
+      const r = await api.get(`/orders/${o.id}`);
+      setDetail(r.data);
+    } catch {
+      setDetail(o);
+    }
   }
 
   async function updateStatus() {
@@ -297,6 +310,29 @@ export default function OrdersPage() {
                 <div style={{ fontSize: 12, color: 'var(--txt-muted)', marginBottom: 4 }}>Customer</div>
                 <div style={{ fontWeight: 600 }}>{detail.user.username}</div>
                 <div style={{ fontSize: 13, color: 'var(--txt-muted)' }}>{detail.user.email}</div>
+                {detail.user.phone && <div style={{ fontSize: 13, color: 'var(--txt-muted)' }}>📞 {detail.user.phone}</div>}
+              </div>
+
+              {/* Shipping Address */}
+              <div style={{ marginBottom: 16, padding: 12, background: '#fafafa', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', marginBottom: 8 }}>📦 ที่อยู่จัดส่ง</div>
+                {detail.shipping_address ? (
+                  <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+                    <div style={{ fontWeight: 600 }}>{detail.shipping_address.name || detail.user.username}</div>
+                    {detail.shipping_address.phone && <div style={{ color: 'var(--txt-muted)' }}>📞 {detail.shipping_address.phone}</div>}
+                    <div>{detail.shipping_address.line1}</div>
+                    <div>{detail.shipping_address.subdistrict} {detail.shipping_address.district}</div>
+                    <div>{detail.shipping_address.province} {detail.shipping_address.zipcode}</div>
+                  </div>
+                ) : detail.user.address ? (
+                  <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+                    <div>{detail.user.address.line1}</div>
+                    <div>{detail.user.address.subdistrict} {detail.user.address.district}</div>
+                    <div>{detail.user.address.province} {detail.user.address.zipcode}</div>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 13, color: 'var(--txt-muted)' }}>ไม่มีข้อมูลที่อยู่</div>
+                )}
               </div>
 
               <div style={{ marginBottom: 16 }}>

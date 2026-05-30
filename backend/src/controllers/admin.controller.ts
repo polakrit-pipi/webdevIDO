@@ -546,7 +546,7 @@ export const adminGetOrders = async (req: Request, res: Response, next: NextFunc
         ...(payment ? { payment_status: payment as string } : {}),
       },
       include: {
-        user: { select: { id: true, username: true, email: true } },
+        user: { select: { id: true, username: true, email: true, phone: true, address: true } },
         items: { include: { product: { select: { id: true, ProductName: true } } } },
       },
       orderBy: { createdAt: 'desc' },
@@ -605,18 +605,44 @@ export const adminVerifyPayment = async (req: Request, res: Response, next: Next
       return;
     }
 
-    const order = await prisma.transaction.update({
+    // Fetch order with items before updating so we can decrement stock
+    const existingOrder = await prisma.transaction.findUnique({
       where: { id },
-      data: {
-        payment_status: action === 'confirm' ? 'confirmed' : 'rejected',
-        // Auto-advance order status when payment is confirmed
-        ...(action === 'confirm' && { order_status: 'Processing' }),
-      },
-      include: {
-        user: { select: { id: true, username: true, email: true } },
-        items: { include: { product: { select: { id: true, ProductName: true } } } },
-      },
+      include: { items: true },
     });
+
+    if (!existingOrder) {
+      res.status(404).json({ error: { message: 'Order not found' } });
+      return;
+    }
+
+    const order = await prisma.$transaction(async (tx) => {
+      // If confirming payment, decrement stock for each ordered variant
+      if (action === 'confirm' && existingOrder.payment_status !== 'confirmed') {
+        for (const item of existingOrder.items) {
+          if (item.selected_sku) {
+            await tx.productVariant.updateMany({
+              where: { sku: item.selected_sku },
+              data: { stockqty: { decrement: item.quantity } },
+            });
+          }
+        }
+      }
+
+      return tx.transaction.update({
+        where: { id },
+        data: {
+          payment_status: action === 'confirm' ? 'confirmed' : 'rejected',
+          // Auto-advance order status when payment is confirmed
+          ...(action === 'confirm' && { order_status: 'Processing' }),
+        },
+        include: {
+          user: { select: { id: true, username: true, email: true } },
+          items: { include: { product: { select: { id: true, ProductName: true } } } },
+        },
+      });
+    });
+
     res.json(order);
   } catch (err) { next(err); }
 };

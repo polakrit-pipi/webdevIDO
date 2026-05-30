@@ -2,23 +2,26 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { CartItem, UserProfile } from '@/types/types';
+import { CartItem, UserProfile, ShippingAddress } from '@/types/types';
 import { useLanguage } from '@/app/context/LanguageContext';
 import { useCurrency } from '@/app/context/CurrencyContext';
 
 const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
-// ── Bank account details (แก้ตรงนี้ได้เลย) ────────────────────────────────
+// ── Bank account details ────────────────────────────────────────────────────
 const BANK_INFO = {
   bankName: 'ธนาคารกสิกรไทย (KBank)',
   accountNumber: '000-0-00000-0',
   accountName: 'IDO Identity Co., Ltd.',
-  qrPromptPay: null as string | null, // ใส่ URL รูป QR PromptPay ถ้ามี
 };
 
 function formatTHB(amount: number) {
   return amount.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
+const EMPTY_ADDRESS: ShippingAddress = {
+  name: '', phone: '', line1: '', subdistrict: '', district: '', province: '', zipcode: '',
+};
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -28,8 +31,13 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [grandTotal, setGrandTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
-  // slip form state
+  // Shipping address state
+  const [addressMode, setAddressMode] = useState<'registered' | 'new'>('registered');
+  const [newAddress, setNewAddress] = useState<ShippingAddress>(EMPTY_ADDRESS);
+
+  // Slip form state
   const [transferredAt, setTransferredAt] = useState('');
   const [slipFile, setSlipFile] = useState<File | null>(null);
   const [slipPreview, setSlipPreview] = useState<string | null>(null);
@@ -39,7 +47,7 @@ export default function CheckoutPage() {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [error, setError] = useState('');
 
-  // Load cart
+  // Load cart + user profile
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { router.push('/login'); return; }
@@ -50,6 +58,7 @@ export default function CheckoutPage() {
     fetch(`${API_URL}/api/users/me?${query}`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then((userData: UserProfile) => {
+        setUserProfile(userData);
         const items = userData.cart?.items || [];
         setCartItems(items);
         const total = items.reduce((sum, item) => {
@@ -58,6 +67,23 @@ export default function CheckoutPage() {
           return sum + Number(price) * item.quantity;
         }, 0);
         setGrandTotal(total);
+
+        // Pre-fill new address with user's registered data
+        if (userData.address) {
+          setNewAddress({
+            name: `${userData.firstname || ''} ${userData.lastname || ''}`.trim(),
+            phone: userData.phone || '',
+            line1: userData.address.line1 || '',
+            subdistrict: userData.address.subdistrict || '',
+            district: userData.address.district || '',
+            province: userData.address.province || '',
+            zipcode: userData.address.zipcode || '',
+          });
+          setAddressMode('registered');
+        } else {
+          // No registered address → force new entry
+          setAddressMode('new');
+        }
       })
       .catch(() => router.push('/cart'))
       .finally(() => setLoading(false));
@@ -73,6 +99,26 @@ export default function CheckoutPage() {
     setSlipPreview(URL.createObjectURL(file));
   }
 
+  function getShippingAddress(): ShippingAddress | null {
+    if (addressMode === 'registered' && userProfile?.address) {
+      return {
+        name: `${userProfile.firstname || ''} ${userProfile.lastname || ''}`.trim(),
+        phone: userProfile.phone || '',
+        line1: userProfile.address.line1,
+        subdistrict: userProfile.address.subdistrict,
+        district: userProfile.address.district,
+        province: userProfile.address.province,
+        zipcode: userProfile.address.zipcode,
+      };
+    }
+    return newAddress;
+  }
+
+  function validateNewAddress(): boolean {
+    const a = newAddress;
+    return !!(a.name && a.phone && a.line1 && a.subdistrict && a.district && a.province && a.zipcode);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
@@ -80,6 +126,10 @@ export default function CheckoutPage() {
     if (!slipFile) { setError('กรุณาแนบสลิปการโอนเงิน'); return; }
     if (!transferredAt) { setError('กรุณาระบุวันเวลาที่โอนเงิน'); return; }
     if (cartItems.length === 0) { setError('ตะกร้าสินค้าว่างเปล่า'); return; }
+
+    if (addressMode === 'new' && !validateNewAddress()) {
+      setError('กรุณากรอกที่อยู่จัดส่งให้ครบถ้วน'); return;
+    }
 
     const token = localStorage.getItem('token');
     if (!token) { router.push('/login'); return; }
@@ -99,7 +149,7 @@ export default function CheckoutPage() {
       const { url: slipUrl } = await uploadRes.json();
       setUploading(false);
 
-      // Step 2: Create transaction
+      // Step 2: Create transaction (with shipping_address)
       const items = cartItems.map(item => {
         const v = item.product?.variants?.find(v => v.sku === item.sku);
         return {
@@ -110,10 +160,12 @@ export default function CheckoutPage() {
         };
       });
 
+      const shippingAddress = getShippingAddress();
+
       const txRes = await fetch(`${API_URL}/api/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ data: { total_summary: grandTotal, items } }),
+        body: JSON.stringify({ data: { total_summary: grandTotal, items, shipping_address: shippingAddress } }),
       });
       if (!txRes.ok) throw new Error('สร้างคำสั่งซื้อไม่สำเร็จ');
       const txData = await txRes.json();
@@ -142,7 +194,6 @@ export default function CheckoutPage() {
 
   async function clearCart(token: string) {
     try {
-      // Fetch cart documentId
       const me = await fetch(`${API_URL}/api/users/me?populate[cart]=*`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -157,7 +208,6 @@ export default function CheckoutPage() {
     } catch { /* ignore */ }
   }
 
-  // ── Max datetime = now (can't say you transferred in the future)
   const maxDatetime = new Date().toISOString().slice(0, 16);
 
   if (loading) return (
@@ -182,25 +232,35 @@ export default function CheckoutPage() {
           <p className="text-sm text-gray-500 mb-1">หมายเลขคำสั่งซื้อ</p>
           <p className="font-mono text-sm font-medium text-gray-800 break-all">{orderId}</p>
         </div>
-        <button
-          onClick={() => router.push('/')}
-          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition font-medium"
-        >
-          กลับหน้าแรก
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => router.push('/account')}
+            className="flex-1 bg-gray-100 text-gray-800 py-3 rounded-lg hover:bg-gray-200 transition font-medium"
+          >
+            ติดตาม Order
+          </button>
+          <button
+            onClick={() => router.push('/')}
+            className="flex-1 bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition font-medium"
+          >
+            กลับหน้าแรก
+          </button>
+        </div>
       </div>
     </div>
   );
 
+  const registeredAddress = userProfile?.address;
+
   // ── Checkout form
   return (
     <div className="mt-[7vh] min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 py-10">
+      <div className="max-w-6xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">ชำระเงิน</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-          {/* ── Left: Order Summary ─────────────────────── */}
+          {/* ── Left: Order Summary + Bank Info ─────────────────── */}
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">สรุปคำสั่งซื้อ</h2>
@@ -263,8 +323,142 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* ── Right: Slip Upload Form ─────────────────── */}
-          <div className="lg:col-span-3">
+          {/* ── Right: Shipping Address + Slip Upload ─────────────── */}
+          <div className="lg:col-span-3 space-y-4">
+
+            {/* Shipping Address Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">ที่อยู่จัดส่ง</h2>
+
+              {registeredAddress && (
+                <div className="flex gap-3 mb-5">
+                  {/* Option: use registered address */}
+                  <button
+                    type="button"
+                    onClick={() => setAddressMode('registered')}
+                    className={`flex-1 border-2 rounded-xl p-4 text-left transition-all ${
+                      addressMode === 'registered'
+                        ? 'border-black bg-black/5'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <p className="text-sm font-semibold text-gray-800 mb-1 flex items-center gap-2">
+                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        addressMode === 'registered' ? 'border-black' : 'border-gray-300'
+                      }`}>
+                        {addressMode === 'registered' && <span className="w-2 h-2 rounded-full bg-black block" />}
+                      </span>
+                      ที่อยู่ที่ลงทะเบียน
+                    </p>
+                    <p className="text-xs text-gray-500 pl-6">{userProfile?.firstname} {userProfile?.lastname}</p>
+                    <p className="text-xs text-gray-500 pl-6">{registeredAddress.line1}</p>
+                    <p className="text-xs text-gray-500 pl-6">
+                      {registeredAddress.subdistrict} {registeredAddress.district} {registeredAddress.province} {registeredAddress.zipcode}
+                    </p>
+                    {userProfile?.phone && <p className="text-xs text-gray-500 pl-6">{userProfile.phone}</p>}
+                  </button>
+
+                  {/* Option: new address */}
+                  <button
+                    type="button"
+                    onClick={() => setAddressMode('new')}
+                    className={`flex-1 border-2 rounded-xl p-4 text-left transition-all ${
+                      addressMode === 'new'
+                        ? 'border-black bg-black/5'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        addressMode === 'new' ? 'border-black' : 'border-gray-300'
+                      }`}>
+                        {addressMode === 'new' && <span className="w-2 h-2 rounded-full bg-black block" />}
+                      </span>
+                      ที่อยู่อื่น
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1 pl-6">กรอกที่อยู่จัดส่งใหม่</p>
+                  </button>
+                </div>
+              )}
+
+              {/* New address form */}
+              {(addressMode === 'new' || !registeredAddress) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-medium text-gray-600 mb-1">ชื่อผู้รับ <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      value={newAddress.name}
+                      onChange={e => setNewAddress(p => ({ ...p, name: e.target.value }))}
+                      placeholder="ชื่อ-นามสกุลผู้รับสินค้า"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">เบอร์โทร <span className="text-red-500">*</span></label>
+                    <input
+                      type="tel"
+                      value={newAddress.phone}
+                      onChange={e => setNewAddress(p => ({ ...p, phone: e.target.value }))}
+                      placeholder="0XX-XXX-XXXX"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">รหัสไปรษณีย์ <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      value={newAddress.zipcode}
+                      onChange={e => setNewAddress(p => ({ ...p, zipcode: e.target.value }))}
+                      placeholder="10000"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-medium text-gray-600 mb-1">ที่อยู่ (บ้านเลขที่ ถนน) <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      value={newAddress.line1}
+                      onChange={e => setNewAddress(p => ({ ...p, line1: e.target.value }))}
+                      placeholder="123/4 ถนนสุขุมวิท"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">แขวง/ตำบล <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      value={newAddress.subdistrict}
+                      onChange={e => setNewAddress(p => ({ ...p, subdistrict: e.target.value }))}
+                      placeholder="คลองเตย"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">เขต/อำเภอ <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      value={newAddress.district}
+                      onChange={e => setNewAddress(p => ({ ...p, district: e.target.value }))}
+                      placeholder="คลองเตย"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-medium text-gray-600 mb-1">จังหวัด <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      value={newAddress.province}
+                      onChange={e => setNewAddress(p => ({ ...p, province: e.target.value }))}
+                      placeholder="กรุงเทพมหานคร"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Slip Upload Form */}
             <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
               <h2 className="text-lg font-semibold text-gray-800">แนบหลักฐานการโอนเงิน</h2>
 

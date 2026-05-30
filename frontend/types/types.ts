@@ -76,14 +76,26 @@ export interface WishlistItem {
   product?: Product;
 }
 
+export interface ShippingAddress {
+  name?: string;
+  phone?: string;
+  line1: string;
+  subdistrict: string;
+  district: string;
+  province: string;
+  zipcode: string;
+}
+
 export interface Transaction {
   id: number;
   documentId: string;
   createdAt: string;
   publishedAt?: string | null;
   order_status: string;
+  payment_status?: string;
   total_summary: number;
   tracking_info?: string;
+  shipping_address?: ShippingAddress;
 }
 
 // ==========================================

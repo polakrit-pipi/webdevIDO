@@ -86,6 +86,7 @@ export const createTransaction = async (req: Request, res: Response, next: NextF
         payment_status: 'unpaid',
         total_summary: data.total_summary,
         tracking_info: data.tracking_info,
+        shipping_address: data.shipping_address ?? null,
         publishedAt: new Date(),
         items: { create: orderItems },
       },

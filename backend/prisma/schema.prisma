@@ -260,6 +260,7 @@ model Transaction {
   payment_status String?   @default("unpaid")  // unpaid, slip_submitted, confirmed, rejected
   total_summary  Decimal?
   tracking_info  String?
+  shipping_address Json?    // { name, phone, line1, subdistrict, district, province, zipcode }
   slip_url       String?   // path to uploaded slip image
   slip_transferred_at DateTime? // transfer time entered by user
   publishedAt    DateTime? @default(now())
