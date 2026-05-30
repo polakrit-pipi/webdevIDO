@@ -110,3 +110,29 @@ function buildRelationInclude(config: any): any {
 
   return result;
 }
+
+/**
+ * PUT /api/users/me
+ * Update current user's profile (firstname, lastname, phone, address).
+ */
+export const updateMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = req.user.id;
+    const { firstname, lastname, phone, address } = req.body;
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(firstname !== undefined && { firstname }),
+        ...(lastname !== undefined && { lastname }),
+        ...(phone !== undefined && { phone }),
+        ...(address !== undefined && { address }),
+      },
+    });
+
+    const { password: _, ...userWithoutPassword } = updated;
+    res.json(userWithoutPassword);
+  } catch (error) {
+    next(error);
+  }
+};

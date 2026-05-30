@@ -76,7 +76,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
  */
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { username, email, password, firstname, lastname, address } = req.body;
+    const { username, email, password, firstname, lastname, phone, address } = req.body;
 
     if (!username || !email || !password) {
       res.status(400).json({
@@ -110,6 +110,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
         password: hashedPassword,
         firstname: firstname || null,
         lastname: lastname || null,
+        phone: phone || null,
         address: address || null,
         role: 'authenticated',
         provider: 'local',

@@ -19,6 +19,7 @@ export default function RegisterPage() {
             <input name="firstname" value={formData.firstname} placeholder={t("register.firstName")} onChange={handleUserChange} className="border p-[0.4vw] w-full rounded focus:outline-none focus:ring-1 focus:ring-black" required />
             <input name="lastname" value={formData.lastname} placeholder={t("register.lastName")} onChange={handleUserChange} className="border p-[0.4vw] w-full rounded focus:outline-none focus:ring-1 focus:ring-black" required />
           </div>
+          <input name="phone" type="tel" value={formData.phone} placeholder={t("register.phone") || "เบอร์โทรศัพท์ (เช่น 08X-XXX-XXXX)"} onChange={handleUserChange} className="border p-[0.4vw] w-full rounded focus:outline-none focus:ring-1 focus:ring-black" />
         </div>
         <hr className="border-gray-200" />
         <div className="space-y-[0.4vw] text-[0.85vw]">

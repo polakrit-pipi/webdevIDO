@@ -14,6 +14,7 @@ export const useRegister = () => {
     lastname: "",
     email: "",
     password: "",
+    phone: "",
   });
 
   // 2. ข้อมูลที่อยู่
@@ -48,7 +49,7 @@ export const useRegister = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          address: addressData, // รวม Object ที่อยู่เข้าไป
+          address: addressData,
         }),
       });
 
