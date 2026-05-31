@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import { Suspense } from "react";
 import { LanguageProvider } from "@/app/context/LanguageContext";
 import { CurrencyProvider } from "@/app/context/CurrencyContext";
 import HtmlLangSync from "@/components/layout/HtmlLangSync";
+import ConditionalLayout from "@/components/layout/ConditionalLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +38,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansThai.variable} antialiased grow`}
       >
@@ -47,10 +45,10 @@ export default function RootLayout({
          <HtmlLangSync />
          <CurrencyProvider>
            <Suspense fallback={<div className="h-16" />}>
-             <Navbar/>
+             <ConditionalLayout>
+               {children}
+             </ConditionalLayout>
            </Suspense>
-           {children}
-           <Footer/>
          </CurrencyProvider>
        </LanguageProvider>
       </body>

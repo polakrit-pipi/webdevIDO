@@ -18,6 +18,12 @@ import {
   adminGetOrders, adminGetOrder, adminUpdateOrderStatus, adminVerifyPayment,
   adminUploadFile,
 } from '../controllers/admin.controller';
+import {
+  adminListUniformProjects,
+  adminCreateUniformProject,
+  adminUpdateUniformProject,
+  adminDeleteUniformProject,
+} from '../controllers/uniformProject.controller';
 
 const router = Router();
 
@@ -96,5 +102,11 @@ router.put('/orders/:id/payment', adminVerifyPayment);
 
 // File Upload
 router.post('/upload', upload.single('file'), adminUploadFile);
+
+// ── IDEABYIDO — Uniform Projects ────────────────────────
+router.get('/uniform-projects', adminListUniformProjects);
+router.post('/uniform-projects', adminCreateUniformProject);
+router.put('/uniform-projects/:id', adminUpdateUniformProject);
+router.delete('/uniform-projects/:id', adminDeleteUniformProject);
 
 export default router;

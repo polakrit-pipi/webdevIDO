@@ -10,6 +10,7 @@ import newProductRoutes from './newProduct.routes';
 import cartRoutes from './cart.routes';
 import wishlistRoutes from './wishlist.routes';
 import transactionRoutes from './transaction.routes';
+import uniformProjectRoutes from './uniformProject.routes';
 import { register } from '../controllers/auth.controller';
 
 const router = Router();
@@ -28,6 +29,9 @@ router.use('/collections', collectionRoutes);
 router.use('/banner', bannerRoutes);
 router.use('/color', colorRoutes);
 router.use('/new-products', newProductRoutes);
+
+// IDEABYIDO
+router.use('/uniform-projects', uniformProjectRoutes);
 
 // Commerce
 router.use('/carts', cartRoutes);
