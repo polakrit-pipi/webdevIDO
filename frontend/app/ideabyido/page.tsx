@@ -81,8 +81,8 @@ const PROCESS = [
   { step: "05", title: "ส่งมอบ", desc: "จัดส่งถึงที่ทั่วประเทศ พร้อมใบรับประกันคุณภาพ" },
 ];
 
-// ─── API config ─────────────────────────────────────────
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
+// Use Next.js proxy route to avoid CORS / mixed-content issues on Vercel
+const API_BASE = "/api";
 
 // ─── Main Component ──────────────────────────────────────
 export default function IdeaByIdoPage() {

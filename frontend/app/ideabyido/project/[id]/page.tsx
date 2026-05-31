@@ -29,7 +29,8 @@ const CATEGORY_COLORS: Record<string, string> = {
   "Other": "#64748b",
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
+// Use Next.js proxy route to avoid CORS / mixed-content issues on Vercel
+const API_BASE = "/api";
 
 export default function ProjectDetailPage() {
   const params = useParams();
