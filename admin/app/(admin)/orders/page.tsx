@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Search, X, Check, Loader, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { Search, X, Check, Loader, Eye, CheckCircle2, XCircle, Download } from 'lucide-react';
 import api from '@/lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
@@ -104,6 +104,31 @@ export default function OrdersPage() {
   // Count pending slips
   const pendingSlips = orders.filter(o => o.payment_status === 'slip_submitted').length;
 
+  function exportCSV() {
+    const rows = [
+      ['Order ID', 'Customer', 'Email', 'Items', 'Total (THB)', 'Status', 'Payment', 'Date'],
+      ...filtered.map(o => [
+        `#${o.id}`,
+        o.user.username,
+        o.user.email,
+        o.items.length,
+        Number(o.total_summary ?? 0),
+        o.order_status ?? '',
+        o.payment_status ?? '',
+        new Date(o.createdAt).toLocaleDateString('th-TH'),
+      ]),
+    ];
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Export ${filtered.length} orders สำเร็จ`);
+  }
+
   return (
     <>
       <div className="page-header">
@@ -119,6 +144,9 @@ export default function OrdersPage() {
           )}
         </div>
         <span className="text-muted" style={{ fontSize: 13 }}>{filtered.length} orders</span>
+        <button className="btn btn-secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Download size={14} /> Export CSV
+        </button>
       </div>
 
       <div className="page-body">

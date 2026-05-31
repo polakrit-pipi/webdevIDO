@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Check, Upload } from 'lucide-react';
 import api from '@/lib/api';
 
 interface Category {
@@ -18,6 +18,8 @@ export default function CategoriesPage() {
   const [editing, setEditing] = useState<Category | null>(null);
   const [form, setForm] = useState({ categoryName: '', type: '', categoryPic: '' });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function load() {
     api.get('/categories').then(r => setItems(r.data)).finally(() => setLoading(false));
@@ -39,6 +41,22 @@ export default function CategoriesPage() {
       categoryPic: (c.categoryPic as any)?.url ?? '',
     });
     setModal(true);
+  }
+
+  async function uploadCategoryPic(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const { data } = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setForm(f => ({ ...f, categoryPic: data.url }));
+      toast.success('อัปโหลดรูปสำเร็จ');
+    } catch { toast.error('Upload failed'); } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   }
 
   async function handleSave() {
@@ -130,8 +148,34 @@ export default function CategoriesPage() {
                 </select>
               </div>
               <div className="form-group">
-                <label className="form-label">Image URL</label>
-                <input className="form-input" value={form.categoryPic} onChange={e => setForm(f => ({ ...f, categoryPic: e.target.value }))} placeholder="https://…" />
+                <label className="form-label">รูปภาพ Category</label>
+                <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={uploadCategoryPic} />
+                {form.categoryPic ? (
+                  <div style={{ position: 'relative', display: 'inline-block', marginBottom: 8 }}>
+                    <img
+                      src={form.categoryPic.startsWith('http') ? form.categoryPic : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337'}${form.categoryPic}`}
+                      alt="preview"
+                      style={{ width: 120, height: 80, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)', display: 'block' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, categoryPic: '' }))}
+                      style={{ position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: '50%', background: '#ef4444', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <X size={11} />
+                    </button>
+                  </div>
+                ) : null}
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  <Upload size={13} />
+                  {uploading ? 'กำลังอัปโหลด...' : form.categoryPic ? 'เปลี่ยนรูป' : 'อัปโหลดรูปภาพ'}
+                </button>
               </div>
             </div>
             <div className="modal-footer">

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Plus, Search, Pencil, Trash2, ChevronRight } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, Download } from 'lucide-react';
 import api from '@/lib/api';
 
 interface Product {
@@ -40,13 +40,41 @@ export default function ProductsPage() {
     p.ProductName.toLowerCase().includes(search.toLowerCase())
   );
 
+  function exportCSV() {
+    const rows = [
+      ['ID', 'Product Name', 'Category', 'Variants', 'Featured', 'Status'],
+      ...filtered.map(p => [
+        p.id,
+        p.ProductName,
+        p.cat_pro?.categoryName ?? '',
+        p.variants.length,
+        p.recomended ? 'Yes' : 'No',
+        p.publishedAt ? 'Published' : 'Draft',
+      ]),
+    ];
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `products_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Export ${filtered.length} products สำเร็จ`);
+  }
+
   return (
     <>
       <div className="page-header">
         <h1 className="page-title">Products</h1>
-        <Link href="/products/new" className="btn btn-primary" id="add-product-btn">
-          <Plus size={15} /> Add Product
-        </Link>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button className="btn btn-secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Download size={14} /> Export CSV
+          </button>
+          <Link href="/products/new" className="btn btn-primary" id="add-product-btn">
+            <Plus size={15} /> Add Product
+          </Link>
+        </div>
       </div>
 
       <div className="page-body">

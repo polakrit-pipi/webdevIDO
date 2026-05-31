@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Upload, X } from 'lucide-react';
 import api from '@/lib/api';
 import ColorPicker from '@/components/ColorPicker';
 
@@ -30,6 +30,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const [variants, setVariants] = useState<EditVariant[]>([]);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ProductName: '', categoryId: '', recomended: false, description: '' });
+  const [uploadingKeys, setUploadingKeys] = useState<Record<number, boolean>>({});
+  const fileRefs = useRef<Record<number, HTMLInputElement | null>>({})
 
   useEffect(() => {
     Promise.all([api.get(`/products/${id}`), api.get('/categories')]).then(([pr, cr]) => {
@@ -72,6 +74,20 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       setVariants(vs => vs.filter(x => x._key !== v._key));
       toast.success('Variant deleted');
     } catch { toast.error('Failed to delete variant'); }
+  }
+
+  async function uploadVariantImage(key: number, file: File) {
+    setUploadingKeys(prev => ({ ...prev, [key]: true }));
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const { data } = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setVField(key, 'imageUrl', data.url);
+      toast.success('อัปโหลดรูปสำเร็จ');
+    } catch { toast.error('Image upload failed'); } finally {
+      setUploadingKeys(prev => ({ ...prev, [key]: false }));
+      if (fileRefs.current[key]) fileRefs.current[key]!.value = '';
+    }
   }
 
   async function save() {
@@ -168,13 +184,37 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     <input className="form-input" type="number" value={v.salePricing ?? ''} onChange={e => setVField(v._key, 'salePricing', e.target.value)} placeholder="—" style={{ fontSize: 13 }} />
                     <button className="btn btn-danger btn-icon" onClick={() => deleteVariant(v)}><Trash2 size={14} /></button>
                   </div>
-                  {/* Image URL Input */}
+                  {/* Image Upload */}
                   <div style={{ marginTop: 8 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Image URL</span>
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <input className="form-input" value={v.imageUrl} onChange={e => setVField(v._key, 'imageUrl', e.target.value)} placeholder="https://img.freepik.com/..." style={{ flex: 1, fontSize: 13 }} />
-                      {v.imageUrl && <img src={v.imageUrl.startsWith('http') ? v.imageUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337'}${v.imageUrl}`} alt="preview" style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4, border: '1px solid var(--border)' }} />}
-                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 6 }}>Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      ref={el => { fileRefs.current[v._key] = el; }}
+                      onChange={e => { const f = e.target.files?.[0]; if (f) uploadVariantImage(v._key, f); }}
+                    />
+                    {v.imageUrl ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <img
+                          src={v.imageUrl.startsWith('http') ? v.imageUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337'}${v.imageUrl}`}
+                          alt="preview"
+                          style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ fontSize: 11 }} onClick={() => fileRefs.current[v._key]?.click()} disabled={uploadingKeys[v._key]}>
+                            <Upload size={11} /> เปลี่ยนรูป
+                          </button>
+                          <button type="button" className="btn btn-danger btn-sm" style={{ fontSize: 11 }} onClick={() => setVField(v._key, 'imageUrl', '')}>
+                            <X size={11} /> ลบรูป
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button type="button" className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => fileRefs.current[v._key]?.click()} disabled={uploadingKeys[v._key]}>
+                        {uploadingKeys[v._key] ? <span style={{ fontSize: 12 }}>กำลังอัปโหลด...</span> : <><Upload size={13} /> อัปโหลดรูปภาพ</>}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

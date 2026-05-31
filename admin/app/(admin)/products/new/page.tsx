@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Plus, Trash2, ArrowLeft, Upload, X } from 'lucide-react';
@@ -28,6 +28,10 @@ export default function NewProductPage() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ProductName: '', categoryId: '', recomended: false, description: '' });
   const [variants, setVariants] = useState<Variant[]>([newVariant()]);
+  // Map: variant._key → uploading state
+  const [uploadingKeys, setUploadingKeys] = useState<Record<number, boolean>>({});
+  // Map: variant._key → hidden file input ref
+  const fileRefs = useRef<Record<number, HTMLInputElement | null>>({})
 
   useEffect(() => {
     api.get('/categories').then(r => setCats(r.data));
@@ -40,24 +44,18 @@ export default function NewProductPage() {
   }
 
   async function uploadImage(key: number, file: File) {
-    setVariant(key, 'uploading', true);
+    setUploadingKeys(prev => ({ ...prev, [key]: true }));
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
-      const res = await fetch(`${API_BASE}/api/admin/upload`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
-      if (!res.ok) throw new Error('Upload failed');
-      const data = await res.json();
+      const { data } = await api.post('/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
       setVariant(key, 'imageUrl', data.url);
-      toast.success('Image uploaded!');
+      toast.success('อัปโหลดรูปสำเร็จ');
     } catch {
       toast.error('Image upload failed');
     } finally {
-      setVariant(key, 'uploading', false);
+      setUploadingKeys(prev => ({ ...prev, [key]: false }));
+      if (fileRefs.current[key]) fileRefs.current[key]!.value = '';
     }
   }
 
@@ -169,13 +167,58 @@ export default function NewProductPage() {
                       </div>
                     </div>
 
-                    {/* Image URL Input */}
+                    {/* Image Upload per Variant */}
                     <div style={{ marginTop: 8 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 4 }}>Image URL</span>
-                      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                        <input className="form-input" value={v.imageUrl} onChange={e => setVariant(v._key, 'imageUrl', e.target.value)} placeholder="https://img.freepik.com/..." style={{ flex: 1, fontSize: 13 }} />
-                        {v.imageUrl && <img src={v.imageUrl.startsWith('http') ? v.imageUrl : `${API_BASE}${v.imageUrl}`} alt="preview" style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4, border: '1px solid var(--border)' }} />}
-                      </div>
+                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--txt-muted)', display: 'block', marginBottom: 6 }}>Image</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        ref={el => { fileRefs.current[v._key] = el; }}
+                        onChange={e => { const f = e.target.files?.[0]; if (f) uploadImage(v._key, f); }}
+                      />
+                      {v.imageUrl ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <img
+                            src={v.imageUrl.startsWith('http') ? v.imageUrl : `${API_BASE}${v.imageUrl}`}
+                            alt="preview"
+                            style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
+                          />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              style={{ fontSize: 11 }}
+                              onClick={() => fileRefs.current[v._key]?.click()}
+                              disabled={uploadingKeys[v._key]}
+                            >
+                              <Upload size={11} /> เปลี่ยนรูป
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm"
+                              style={{ fontSize: 11 }}
+                              onClick={() => setVariant(v._key, 'imageUrl', '')}
+                            >
+                              <X size={11} /> ลบรูป
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                          onClick={() => fileRefs.current[v._key]?.click()}
+                          disabled={uploadingKeys[v._key]}
+                        >
+                          {uploadingKeys[v._key] ? (
+                            <span style={{ fontSize: 12 }}>กำลังอัปโหลด...</span>
+                          ) : (
+                            <><Upload size={13} /> อัปโหลดรูปภาพ</>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
