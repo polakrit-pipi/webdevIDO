@@ -41,7 +41,7 @@ export default function IdeaByIdoLayout({ children }: { children: React.ReactNod
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#0a0f1e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#0a0f1e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <div>
@@ -82,7 +82,7 @@ export default function IdeaByIdoLayout({ children }: { children: React.ReactNod
           {/* CTA */}
           <div className="flex items-center gap-4">
             <Link href="/" style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px", textDecoration: "none" }}>
-              ← IDO IDENTITY
+              ← IDOIDENTITY
             </Link>
             <a
               href="#contact"
@@ -118,7 +118,7 @@ export default function IdeaByIdoLayout({ children }: { children: React.ReactNod
         <div style={{ maxWidth: "1280px", margin: "0 auto" }} className="flex flex-col sm:flex-row justify-between gap-8">
           <div>
             <div style={{ color: "#c9a84c", fontWeight: 800, fontSize: "20px", letterSpacing: "-0.02em", marginBottom: "8px" }}>
-              IDEA BY IDO
+              IDEABYIDO
             </div>
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", maxWidth: "260px", lineHeight: 1.7 }}>
               โรงงานรับผลิตยูนิฟอร์มคุณภาพสูง ทุกประเภท ทุกขนาด
@@ -145,7 +145,7 @@ export default function IdeaByIdoLayout({ children }: { children: React.ReactNod
         </div>
         <div style={{ maxWidth: "1280px", margin: "2rem auto 0", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "1.5rem" }}>
           <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "12px", textAlign: "center" }}>
-            © 2024 IDEA BY IDO — A Division of IDO GROUP. All rights reserved.
+            © 2024 IDEABYIDO — A Division of IDO GROUP. All rights reserved.
           </p>
         </div>
       </footer>

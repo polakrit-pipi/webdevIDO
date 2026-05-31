@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import { Plus, Pencil, Trash2, Search, Star, X, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Star, X, Upload, ImagePlus } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '@/lib/api';
 
@@ -41,8 +41,7 @@ const emptyForm = {
   category: 'Work Uniform',
   description: '',
   coverImage: '',
-  images: '',       // comma-separated URLs
-  tags: '',         // comma-separated tags
+  tags: '',
   quantity: '',
   material: '',
   featured: false,
@@ -59,8 +58,15 @@ export default function UniformProjectsPage() {
   const [editing, setEditing] = useState<UniformProject | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Cover image state
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  // Additional images state — store as array of URL strings
+  const [additionalImages, setAdditionalImages] = useState<string[]>([]);
+  const [uploadingExtra, setUploadingExtra] = useState(false);
+  const extraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { loadProjects(); }, []);
 
@@ -79,6 +85,7 @@ export default function UniformProjectsPage() {
   function openAdd() {
     setEditing(null);
     setForm(emptyForm);
+    setAdditionalImages([]);
     setModalOpen(true);
   }
 
@@ -90,13 +97,17 @@ export default function UniformProjectsPage() {
       category: p.category,
       description: p.description ?? '',
       coverImage: p.coverImage ?? '',
-      images: Array.isArray(p.images) ? p.images.map(i => i.url).join(', ') : '',
       tags: Array.isArray(p.tags) ? p.tags.join(', ') : '',
       quantity: p.quantity?.toString() ?? '',
       material: p.material ?? '',
       featured: p.featured,
       publishedAt: p.publishedAt ? p.publishedAt.slice(0, 10) : '',
     });
+    // Load existing additional images (excluding cover)
+    const imgs = Array.isArray(p.images)
+      ? p.images.map(i => i.url).filter(u => u !== p.coverImage)
+      : [];
+    setAdditionalImages(imgs);
     setModalOpen(true);
   }
 
@@ -110,12 +121,8 @@ export default function UniformProjectsPage() {
         category: form.category,
         description: form.description.trim() || null,
         coverImage: form.coverImage.trim() || null,
-        images: form.images
-          ? form.images.split(',').map(u => ({ url: u.trim() })).filter(u => u.url)
-          : [],
-        tags: form.tags
-          ? form.tags.split(',').map(t => t.trim()).filter(Boolean)
-          : [],
+        images: additionalImages.map(url => ({ url })),
+        tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
         quantity: form.quantity ? parseInt(form.quantity, 10) : null,
         material: form.material.trim() || null,
         featured: form.featured,
@@ -149,22 +156,50 @@ export default function UniformProjectsPage() {
     }
   }
 
+  // ── Upload cover image ──────────────────────────────────
   async function handleUploadCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
+    setUploadingCover(true);
     try {
       const fd = new FormData();
       fd.append('file', file);
       const { data } = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-      const url = data.url;
-      setForm(f => ({ ...f, coverImage: url }));
-      toast.success('อัปโหลดรูปสำเร็จ');
+      setForm(f => ({ ...f, coverImage: data.url }));
+      toast.success('อัปโหลดรูป Cover สำเร็จ');
     } catch {
       toast.error('อัปโหลดล้มเหลว');
     } finally {
-      setUploading(false);
+      setUploadingCover(false);
+      if (coverInputRef.current) coverInputRef.current.value = '';
     }
+  }
+
+  // ── Upload additional images (multiple) ─────────────────
+  async function handleUploadExtra(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setUploadingExtra(true);
+    try {
+      const urls: string[] = [];
+      for (const file of files) {
+        const fd = new FormData();
+        fd.append('file', file);
+        const { data } = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+        urls.push(data.url);
+      }
+      setAdditionalImages(prev => [...prev, ...urls]);
+      toast.success(`อัปโหลด ${urls.length} รูปสำเร็จ`);
+    } catch {
+      toast.error('อัปโหลดล้มเหลว');
+    } finally {
+      setUploadingExtra(false);
+      if (extraInputRef.current) extraInputRef.current.value = '';
+    }
+  }
+
+  function removeExtraImage(idx: number) {
+    setAdditionalImages(prev => prev.filter((_, i) => i !== idx));
   }
 
   // Filtered list
@@ -192,7 +227,7 @@ export default function UniformProjectsPage() {
             }}>✦</span>
             Uniform Projects
           </h1>
-          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>IDEA BY IDO — Portfolio Management</div>
+          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>IDEABYIDO — Portfolio Management</div>
         </div>
         <button className="btn btn-primary" onClick={openAdd} style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c060)', color: '#0a0f1e', border: 'none' }}>
           <Plus size={15} /> เพิ่มผลงานใหม่
@@ -248,7 +283,12 @@ export default function UniformProjectsPage() {
               <div className="spinner" />
             ) : filtered.length === 0 ? (
               <div className="empty-state">
-                <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🏭</div>
+                <div style={{ marginBottom: '12px', opacity: 0.3 }}>
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M3 9h18M9 21V9" />
+                  </svg>
+                </div>
                 <div>{search || filterCat ? 'ไม่พบผลงานที่ค้นหา' : 'ยังไม่มีผลงาน — กดเพิ่มผลงานใหม่'}</div>
               </div>
             ) : (
@@ -269,7 +309,6 @@ export default function UniformProjectsPage() {
                 <tbody>
                   {filtered.map(p => (
                     <tr key={p.id}>
-                      {/* Cover thumb */}
                       <td>
                         <div
                           style={{
@@ -281,13 +320,18 @@ export default function UniformProjectsPage() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '18px',
                             flexShrink: 0,
                           }}
                         >
                           {p.coverImage ? (
                             <img src={p.coverImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : '🏭'}
+                          ) : (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={CATEGORY_COLORS[p.category] ?? '#64748b'} strokeWidth="1.5" opacity="0.6">
+                              <rect x="3" y="3" width="18" height="18" rx="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <path d="M21 15l-5-5L5 21" />
+                            </svg>
+                          )}
                         </div>
                       </td>
                       <td>
@@ -369,7 +413,7 @@ export default function UniformProjectsPage() {
                   }}>✦</span>
                   {editing ? 'แก้ไขผลงาน' : 'เพิ่มผลงานใหม่'}
                 </div>
-                <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>IDEA BY IDO Uniform Portfolio</div>
+                <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>IDEABYIDO Uniform Portfolio</div>
               </div>
               <button className="btn btn-secondary btn-icon" onClick={() => setModalOpen(false)}>
                 <X size={16} />
@@ -429,45 +473,149 @@ export default function UniformProjectsPage() {
                 {/* ── Cover Image */}
                 <div className="form-group" style={{ gridColumn: '1/-1' }}>
                   <label className="form-label">รูปภาพหลัก (Cover)</label>
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+
+                  {/* Upload zone */}
+                  <div
+                    style={{
+                      border: '2px dashed #e2e8f0',
+                      borderRadius: '12px',
+                      padding: '20px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      transition: 'border-color 0.2s, background 0.2s',
+                      background: form.coverImage ? '#f8fafc' : 'transparent',
+                    }}
+                    onClick={() => coverInputRef.current?.click()}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = '#c9a84c'; (e.currentTarget as HTMLDivElement).style.background = '#fffbf0'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = '#e2e8f0'; (e.currentTarget as HTMLDivElement).style.background = form.coverImage ? '#f8fafc' : 'transparent'; }}
+                  >
                     <input
-                      className="form-input"
-                      placeholder="URL รูปภาพ หรืออัปโหลด →"
-                      value={form.coverImage}
-                      onChange={e => setForm(f => ({ ...f, coverImage: e.target.value }))}
-                      style={{ flex: 1 }}
+                      ref={coverInputRef}
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={handleUploadCover}
                     />
-                    <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUploadCover} />
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading}
-                      style={{ flexShrink: 0 }}
-                    >
-                      <Upload size={14} /> {uploading ? 'กำลังอัปโหลด...' : 'อัปโหลด'}
-                    </button>
+                    {form.coverImage ? (
+                      <div style={{ position: 'relative', display: 'inline-block' }}>
+                        <img
+                          src={form.coverImage}
+                          alt="cover"
+                          style={{ width: '160px', height: '110px', objectFit: 'cover', borderRadius: '8px', display: 'block' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={e => { e.stopPropagation(); setForm(f => ({ ...f, coverImage: '' })); }}
+                          style={{
+                            position: 'absolute',
+                            top: '-8px',
+                            right: '-8px',
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '50%',
+                            background: '#ef4444',
+                            color: '#fff',
+                            border: 'none',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '12px',
+                          }}
+                        >
+                          <X size={12} />
+                        </button>
+                        <div style={{ marginTop: '8px', fontSize: '12px', color: '#64748b' }}>คลิกเพื่อเปลี่ยนรูป</div>
+                      </div>
+                    ) : (
+                      <div>
+                        {uploadingCover ? (
+                          <div className="spinner" style={{ margin: '0 auto 8px', width: 28, height: 28 }} />
+                        ) : (
+                          <Upload size={28} style={{ margin: '0 auto 8px', color: '#94a3b8' }} />
+                        )}
+                        <div style={{ fontWeight: 600, color: '#334155', fontSize: '14px', marginBottom: '4px' }}>
+                          {uploadingCover ? 'กำลังอัปโหลด...' : 'คลิกเพื่ออัปโหลดรูป Cover'}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>PNG, JPG, WEBP ขนาดไม่เกิน 10MB</div>
+                      </div>
+                    )}
                   </div>
-                  {form.coverImage && (
-                    <img
-                      src={form.coverImage}
-                      alt="cover preview"
-                      style={{ marginTop: '8px', width: '120px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                    />
-                  )}
                 </div>
 
-                {/* ── Images */}
+                {/* ── Additional Images — Multi Upload */}
                 <div className="form-group" style={{ gridColumn: '1/-1' }}>
                   <label className="form-label">รูปภาพเพิ่มเติม</label>
-                  <textarea
-                    className="form-textarea"
-                    placeholder="วาง URL รูปภาพ คั่นด้วย comma: url1, url2, url3"
-                    value={form.images}
-                    onChange={e => setForm(f => ({ ...f, images: e.target.value }))}
-                    rows={2}
-                  />
-                  <div className="form-error" style={{ color: '#64748b' }}>คั่นด้วย comma ระหว่าง URL</div>
+
+                  {/* Existing previews */}
+                  {additionalImages.length > 0 && (
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                      {additionalImages.map((url, idx) => (
+                        <div key={idx} style={{ position: 'relative' }}>
+                          <img
+                            src={url}
+                            alt={`extra-${idx}`}
+                            style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeExtraImage(idx)}
+                            style={{
+                              position: 'absolute',
+                              top: '-6px',
+                              right: '-6px',
+                              width: '18px',
+                              height: '18px',
+                              borderRadius: '50%',
+                              background: '#ef4444',
+                              color: '#fff',
+                              border: 'none',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <X size={10} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Upload button */}
+                  <div
+                    style={{
+                      border: '2px dashed #e2e8f0',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      textAlign: 'center',
+                      cursor: uploadingExtra ? 'not-allowed' : 'pointer',
+                      transition: 'border-color 0.2s, background 0.2s',
+                    }}
+                    onClick={() => !uploadingExtra && extraInputRef.current?.click()}
+                    onMouseEnter={e => { if (!uploadingExtra) { (e.currentTarget as HTMLDivElement).style.borderColor = '#c9a84c'; (e.currentTarget as HTMLDivElement).style.background = '#fffbf0'; } }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = '#e2e8f0'; (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+                  >
+                    <input
+                      ref={extraInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      style={{ display: 'none' }}
+                      onChange={handleUploadExtra}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: uploadingExtra ? '#94a3b8' : '#64748b' }}>
+                      {uploadingExtra ? (
+                        <div className="spinner" style={{ width: 18, height: 18 }} />
+                      ) : (
+                        <ImagePlus size={18} />
+                      )}
+                      <span style={{ fontSize: '13px', fontWeight: 500 }}>
+                        {uploadingExtra ? 'กำลังอัปโหลด...' : 'คลิกเพื่ออัปโหลดรูปเพิ่มเติม (เลือกได้หลายรูป)'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* ── จำนวน / วัสดุ */}
@@ -504,14 +652,13 @@ export default function UniformProjectsPage() {
 
                 {/* ── Featured + Published */}
                 <div className="form-group">
-                  <label className="form-label">
+                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                     <input
                       type="checkbox"
                       checked={form.featured}
                       onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))}
-                      style={{ marginRight: '8px' }}
                     />
-                    ⭐ Featured (แสดงในหน้าหลัก)
+                    <span>Featured (แสดงในหน้าหลัก)</span>
                   </label>
                 </div>
                 <div className="form-group">
