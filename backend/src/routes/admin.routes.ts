@@ -17,6 +17,7 @@ import {
   adminGetUsers, adminGetUser,
   adminGetOrders, adminGetOrder, adminUpdateOrderStatus, adminVerifyPayment,
   adminUploadFile,
+  adminGetReturnOrders, adminGetReturnOrder, adminCreateReturnOrder, adminUpdateReturnOrder, adminDeleteReturnOrder,
 } from '../controllers/admin.controller';
 import {
   adminListUniformProjects,
@@ -102,6 +103,13 @@ router.put('/orders/:id/payment', adminVerifyPayment);
 
 // File Upload
 router.post('/upload', upload.single('file'), adminUploadFile);
+
+// Return Orders (Return & Replacement)
+router.get('/returns', adminGetReturnOrders);
+router.get('/returns/:id', adminGetReturnOrder);
+router.post('/returns', adminCreateReturnOrder);
+router.put('/returns/:id', adminUpdateReturnOrder);
+router.delete('/returns/:id', adminDeleteReturnOrder);
 
 // ── IDEABYIDO — Uniform Projects ────────────────────────
 router.get('/uniform-projects', adminListUniformProjects);

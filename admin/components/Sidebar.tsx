@@ -3,7 +3,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard, ShoppingBag, Tag, Image, Flag,
-  Palette, Star, Users, ShoppingCart, LogOut, Zap, Shirt
+  Palette, Star, Users, ShoppingCart, LogOut, Zap, Shirt, RotateCcw
 } from 'lucide-react';
 
 const navItems = [
@@ -19,6 +19,7 @@ const navItems = [
   { href: '/new-products', label: 'New Arrivals', icon: Star },
   { section: 'IDO IDENTITY — Commerce' },
   { href: '/orders', label: 'Orders', icon: ShoppingCart },
+  { href: '/returns', label: 'Return & Replacement', icon: RotateCcw },
   { href: '/users', label: 'Users', icon: Users },
   { section: '✦ IDEA BY IDO' },
   { href: '/uniform-projects', label: 'Uniform Projects', icon: Shirt },

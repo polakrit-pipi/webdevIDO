@@ -271,6 +271,7 @@ model Transaction {
   userId         Int
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   items          OrderItem[]
+  returnOrders   ReturnOrder[]
 
   @@map("transactions")
 }
@@ -315,3 +316,43 @@ model UniformProject {
 
   @@map("uniform_projects")
 }
+
+// ============================================
+// ReturnOrder (Return & Replacement Orders)
+// ============================================
+model ReturnOrder {
+  id                Int      @id @default(autoincrement())
+  documentId        String   @unique @default(uuid())
+
+  // Link to the original order
+  originalOrderId   Int
+  originalOrder     Transaction @relation(fields: [originalOrderId], references: [id])
+
+  // Return reason
+  returnReason      String?
+
+  // Items to be replaced (JSON snapshot: [{productName, sku, quantity, priceOverride}])
+  items             Json
+
+  // Replacement shipment pricing
+  itemsPrice        Decimal  @default(0)  // 0 = free / complimentary
+  shippingCost      Decimal  @default(0)  // 0 = free shipping
+
+  // Status
+  status            String   @default("Pending") // Pending | Processing | Shipped | Delivered | Cancelled
+
+  // Shipping tracking for replacement parcel
+  trackingInfo      String?
+
+  // Shipping address for replacement (same as original or overridden)
+  shippingAddress   Json?
+
+  // Admin notes
+  adminNote         String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("return_orders")
+}
+

@@ -660,3 +660,133 @@ export const adminUploadFile = (req: Request, res: Response): void => {
   const relativePath = `/uploads/${req.file.filename}`;
   res.json({ url: relativePath, originalname: req.file.originalname, size: req.file.size });
 };
+
+// ============================================================
+// RETURN ORDERS (Return & Replacement)
+// ============================================================
+
+/** GET /api/admin/returns */
+export const adminGetReturnOrders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { status } = req.query;
+    const returns = await prisma.returnOrder.findMany({
+      where: status ? { status: status as string } : undefined,
+      include: {
+        originalOrder: {
+          include: {
+            user: { select: { id: true, username: true, email: true, phone: true } },
+            items: { include: { product: { select: { id: true, ProductName: true } } } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(returns);
+  } catch (err) { next(err); }
+};
+
+/** GET /api/admin/returns/:id */
+export const adminGetReturnOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const id = pid(req.params.id);
+    const ret = await prisma.returnOrder.findUnique({
+      where: { id },
+      include: {
+        originalOrder: {
+          include: {
+            user: { select: { id: true, username: true, email: true, phone: true, address: true } },
+            items: { include: { product: { select: { id: true, ProductName: true } } } },
+          },
+        },
+      },
+    });
+    if (!ret) { res.status(404).json({ error: { message: 'Return order not found' } }); return; }
+    res.json(ret);
+  } catch (err) { next(err); }
+};
+
+/** POST /api/admin/returns — create a replacement order */
+export const adminCreateReturnOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const {
+      originalOrderId,
+      returnReason,
+      items,           // [{productName, sku, quantity, priceOverride}]
+      itemsPrice,      // 0 or custom
+      shippingCost,    // 0 (free) or custom
+      shippingAddress, // JSON address
+      adminNote,
+    } = req.body;
+
+    if (!originalOrderId) {
+      res.status(400).json({ error: { message: 'originalOrderId is required' } });
+      return;
+    }
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      res.status(400).json({ error: { message: 'items array is required' } });
+      return;
+    }
+
+    // Verify original order exists
+    const original = await prisma.transaction.findUnique({ where: { id: parseInt(originalOrderId) } });
+    if (!original) { res.status(404).json({ error: { message: 'Original order not found' } }); return; }
+
+    const ret = await prisma.returnOrder.create({
+      data: {
+        originalOrderId: parseInt(originalOrderId),
+        returnReason: returnReason ?? null,
+        items,
+        itemsPrice: parseFloat(itemsPrice ?? 0),
+        shippingCost: parseFloat(shippingCost ?? 0),
+        shippingAddress: shippingAddress ?? original.shipping_address,
+        adminNote: adminNote ?? null,
+        status: 'Pending',
+      },
+      include: {
+        originalOrder: {
+          include: {
+            user: { select: { id: true, username: true, email: true } },
+          },
+        },
+      },
+    });
+
+    res.status(201).json(ret);
+  } catch (err) { next(err); }
+};
+
+/** PUT /api/admin/returns/:id — update status, tracking, note */
+export const adminUpdateReturnOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const id = pid(req.params.id);
+    const { status, trackingInfo, adminNote, shippingCost, itemsPrice } = req.body;
+
+    const VALID = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+    if (status && !VALID.includes(status)) {
+      res.status(400).json({ error: { message: `status must be one of: ${VALID.join(', ')}` } });
+      return;
+    }
+
+    const ret = await prisma.returnOrder.update({
+      where: { id },
+      data: {
+        ...(status !== undefined && { status }),
+        ...(trackingInfo !== undefined && { trackingInfo }),
+        ...(adminNote !== undefined && { adminNote }),
+        ...(shippingCost !== undefined && { shippingCost: parseFloat(shippingCost) }),
+        ...(itemsPrice !== undefined && { itemsPrice: parseFloat(itemsPrice) }),
+      },
+    });
+    res.json(ret);
+  } catch (err) { next(err); }
+};
+
+/** DELETE /api/admin/returns/:id */
+export const adminDeleteReturnOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const id = pid(req.params.id);
+    await prisma.returnOrder.delete({ where: { id } });
+    res.json({ success: true });
+  } catch (err) { next(err); }
+};
+
