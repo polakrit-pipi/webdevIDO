@@ -8,3 +8,4 @@ postgres-data/
 **/.env
 !.env.example
 !**/.env.example
+profile.pdf

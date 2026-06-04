@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 // ─── Types ──────────────────────────────────────────────
@@ -104,13 +105,46 @@ const MailIcon = () => (
   </svg>
 );
 
+const MapIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+    <circle cx="12" cy="10" r="3"/>
+  </svg>
+);
+
 // ─── Process Steps ───────────────────────────────────────
 const PROCESS = [
   { step: "01", title: "ติดต่อ & บรีฟงาน", desc: "แจ้งความต้องการ จำนวน ประเภทชุด พร้อมโลโก้และสี" },
-  { step: "02", title: "ออกแบบ & อนุมัติ", desc: "ทีมออกแบบทำ mockup ให้อนุมัติก่อนผลิตจริง" },
-  { step: "03", title: "เลือกวัสดุ", desc: "เลือกผ้าจากตัวอย่างจริง มีหลายคุณภาพให้เลือก" },
-  { step: "04", title: "ผลิต & ตรวจสอบ", desc: "ผลิตในโรงงานของเรา QC ทุกชิ้น" },
-  { step: "05", title: "ส่งมอบ", desc: "จัดส่งถึงที่ทั่วประเทศ พร้อมใบรับประกันคุณภาพ" },
+  { step: "02", title: "ออกแบบ Artwork & อนุมัติ", desc: "ทีมออกแบบทำ mockup ให้อนุมัติก่อนผลิตจริง พร้อมตัวอย่างผ้า" },
+  { step: "03", title: "ผลิต & QC ทุกขั้นตอน", desc: "ผลิตในโรงงานของเรา ตรวจสอบคุณภาพทุกชิ้นก่อนส่ง" },
+  { step: "04", title: "งานปัก & สกรีน", desc: "บริการปักโลโก้ด้วยเครื่องปักอัตโนมัติ และสกรีนทุกแบบ" },
+  { step: "05", title: "จัดส่งทั่วประเทศ", desc: "จัดส่งถึงที่ทั่วประเทศ พร้อมใบรับประกันคุณภาพ" },
+];
+
+// ─── Gallery images from company profile ─────────────────
+const GALLERY_IMAGES = [
+  { src: "/ideabyido/img_p4_63_1280x853.png",  alt: "ผลงาน DPU RUN 2025 - เสื้อกีฬากิจกรรม",        label: "Sport Event" },
+  { src: "/ideabyido/img_p4_64_1477x1108.png", alt: "ผลงานยูนิฟอร์มลูกค้า",                          label: "Corporate" },
+  { src: "/ideabyido/img_p4_65_1290x844.png",  alt: "งานผลิตจริง ผลงานที่ไว้วางใจ",                  label: "Event" },
+  { src: "/ideabyido/img_p4_66_1290x857.png",  alt: "งานผลิต ชุดยูนิฟอร์มหลากสี",                   label: "Uniform" },
+  { src: "/ideabyido/img_p4_67_1246x1312.png", alt: "ผลงานยูนิฟอร์มสถาบันการศึกษา",                 label: "School" },
+];
+
+const FACTORY_IMAGES = [
+  { src: "/ideabyido/img_p2_1_363x272.jpeg",   alt: "ป้ายบริษัท ไอเดียบายไอดู",         label: "สำนักงาน" },
+  { src: "/ideabyido/img_p2_2_363x272.jpeg",   alt: "หน้าโรงงาน ไอเดียบายไอดู",         label: "โรงงาน" },
+  { src: "/ideabyido/img_p2_3_351x273.jpeg",   alt: "ทีมงาน ไอเดียบายไอดู",             label: "ทีมงาน" },
+  { src: "/ideabyido/img_p2_4_365x274.jpeg",   alt: "โรงงานยามค่ำคืน ไอเดียบายไอดู",   label: "โรงงาน" },
+  { src: "/ideabyido/img_p2_5_363x272.jpeg",   alt: "สายการผลิต ไอเดียบายไอดู",        label: "การผลิต" },
+];
+
+const PRODUCTION_IMAGES = [
+  { src: "/ideabyido/img_p5_1_621x465.jpeg",   alt: "เครื่องจักรปักอัตโนมัติ",          label: "งานปัก" },
+  { src: "/ideabyido/img_p6_1_317x238.jpeg",   alt: "การตัดเย็บผ้า",                    label: "การผลิต" },
+  { src: "/ideabyido/img_p6_2_317x237.jpeg",   alt: "ห้องตัดเย็บ",                      label: "การผลิต" },
+  { src: "/ideabyido/img_p5_9_534x400.jpeg",   alt: "เครื่องสกรีน",                     label: "งานสกรีน" },
+  { src: "/ideabyido/img_p6_15_593x333.jpeg",  alt: "คลังสินค้า",                       label: "จัดส่ง" },
+  { src: "/ideabyido/img_p6_17_593x333.jpeg",  alt: "บรรจุภัณฑ์พร้อมส่ง",              label: "จัดส่ง" },
 ];
 
 // ─── No-image placeholder SVG ───────────────────────────
@@ -131,6 +165,7 @@ export default function IdeaByIdoPage() {
   const [activeCategory, setActiveCategory] = useState("ทั้งหมด");
   const [loading, setLoading] = useState(true);
   const [heroVisible, setHeroVisible] = useState(false);
+  const [activeGalleryTab, setActiveGalleryTab] = useState<"clients" | "factory" | "production">("clients");
 
   useEffect(() => {
     setTimeout(() => setHeroVisible(true), 100);
@@ -158,28 +193,44 @@ export default function IdeaByIdoPage() {
 
   return (
     <div style={{ background: "#0a0f1e", color: "#ffffff", minHeight: "100vh" }}>
+
       {/* ═══════════════ HERO ═══════════════ */}
       <section style={{ position: "relative", minHeight: "90vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80')", backgroundSize: "cover", backgroundPosition: "center" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(10,15,30,0.92) 0%, rgba(10,15,30,0.75) 50%, rgba(10,15,30,0.85) 100%)" }} />
+        {/* Hero background: real team photo */}
+        <div style={{ position: "absolute", inset: 0 }}>
+          <Image
+            src="/ideabyido/img_p2_3_351x273.jpeg"
+            alt="ทีมงาน ไอเดียบายไอดู"
+            fill
+            style={{ objectFit: "cover", objectPosition: "center top", filter: "brightness(0.35) saturate(1.2)" }}
+            unoptimized
+            priority
+          />
+        </div>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(10,15,30,0.95) 0%, rgba(10,15,30,0.70) 50%, rgba(10,15,30,0.88) 100%)" }} />
         <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
 
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "4rem 2rem", position: "relative", zIndex: 1, opacity: heroVisible ? 1 : 0, transform: heroVisible ? "translateY(0)" : "translateY(32px)", transition: "all 0.9s cubic-bezier(0.4,0,0.2,1)" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: "100px", padding: "6px 16px", marginBottom: "24px" }}>
             <div style={{ width: "6px", height: "6px", background: "#c9a84c", borderRadius: "50%" }} />
-            <span style={{ color: "#c9a84c", fontSize: "12px", letterSpacing: "0.15em", fontWeight: 600 }}>UNIFORM FACTORY</span>
+            <span style={{ color: "#c9a84c", fontSize: "12px", letterSpacing: "0.15em", fontWeight: 600 }}>UNIFORM FACTORY — ก่อตั้ง พ.ศ.2554</span>
           </div>
 
-          <h1 style={{ fontSize: "clamp(2.8rem, 6vw, 5.5rem)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.03em", marginBottom: "1.5rem", maxWidth: "800px" }}>
-            ผลิตยูนิฟอร์ม
+          <h1 style={{ fontSize: "clamp(2.4rem, 5.5vw, 5rem)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.03em", marginBottom: "1rem", maxWidth: "800px" }}>
+            บริษัท ไอเดียบายไอดู
             <br />
             <span style={{ background: "linear-gradient(135deg, #c9a84c, #f0d080, #c9a84c)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              คุณภาพระดับโรงงาน
+              จำกัด
             </span>
           </h1>
 
-          <p style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)", color: "rgba(255,255,255,0.65)", lineHeight: 1.8, maxWidth: "560px", marginBottom: "2.5rem" }}>
-            รับผลิตยูนิฟอร์มทุกประเภท ออกแบบตามความต้องการ ควบคุมคุณภาพทุกขั้นตอน ตั้งแต่ 50 ชิ้นขึ้นไป
+          <p style={{ fontSize: "clamp(1rem, 1.5vw, 1.25rem)", color: "rgba(255,255,255,0.8)", fontWeight: 500, marginBottom: "0.75rem", fontStyle: "italic", letterSpacing: "0.02em" }}>
+            &ldquo;ทุกสิ่งเป็นไปได้เพื่อบริการที่ดีเยี่ยม&rdquo;
+          </p>
+
+          <p style={{ fontSize: "clamp(0.95rem, 1.3vw, 1.1rem)", color: "rgba(255,255,255,0.55)", lineHeight: 1.8, maxWidth: "560px", marginBottom: "2.5rem" }}>
+            โรงงานรับผลิตออกแบบเสื้อผ้ายูนิฟอร์มและแฟชั่น ประสบการณ์กว่า 15 ปี
+            รับผลิตเสื้อเชิ้ต เสื้อแจ็คเก็ต กางเกง เสื้อยืดโปโล ชุดช่าง ทุกรูปแบบ
           </p>
 
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
@@ -192,11 +243,11 @@ export default function IdeaByIdoPage() {
             </a>
           </div>
 
-          {/* Stats */}
+          {/* Stats from profile */}
           <div style={{ display: "flex", gap: "3rem", marginTop: "4rem", flexWrap: "wrap" }}>
             {[
+              { value: "15+",  label: "ปีประสบการณ์ (ก่อตั้ง 2554)" },
               { value: "500+", label: "โปรเจกต์ที่ผ่านมา" },
-              { value: "6+",   label: "ปีประสบการณ์" },
               { value: "50+",  label: "บริษัทที่ไว้วางใจ" },
             ].map((stat) => (
               <div key={stat.label}>
@@ -208,8 +259,50 @@ export default function IdeaByIdoPage() {
         </div>
       </section>
 
+      {/* ═══════════════ ABOUT / WHO WE ARE ═══════════════ */}
+      <section id="about" style={{ padding: "6rem 2rem", background: "#0d1526" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
+            {/* Text */}
+            <div>
+              <p style={{ color: "#c9a84c", fontSize: "12px", letterSpacing: "0.25em", fontWeight: 600, marginBottom: "12px" }}>WHO WE ARE</p>
+              <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 800, letterSpacing: "-0.02em", marginBottom: "1.5rem" }}>
+                บริษัท ไอเดียบายไอดู จำกัด
+              </h2>
+              <div style={{ width: "48px", height: "3px", background: "linear-gradient(90deg, #c9a84c, #f0d080)", borderRadius: "2px", marginBottom: "1.5rem" }} />
+              <p style={{ color: "rgba(255,255,255,0.65)", lineHeight: 1.9, fontSize: "15px", marginBottom: "1.2rem" }}>
+                เราเป็นโรงงานที่รับผลิตออกแบบเสื้อผ้ายูนิฟอร์มและแฟชั่น <strong style={{ color: "rgba(255,255,255,0.85)" }}>จดทะเบียนบริษัทตั้งแต่ปีพ.ศ.2554</strong> มีประสบการณ์พร้อมให้คำแนะนำปรึกษา
+              </p>
+              <p style={{ color: "rgba(255,255,255,0.65)", lineHeight: 1.9, fontSize: "15px", marginBottom: "1.2rem" }}>
+                ไม่ว่าจะเป็นงานผลิตเสื้อเชิ้ต เสื้อแจ็คเก็ต กางเกงขายาว กางเกงขาสั้น เสื้อยืดโปโล ชุดช่าง ตลอดงานเย็บทุกรูป ตามจำนวนที่คุณต้องการในราคาที่คุณพอใจ
+              </p>
+              <p style={{ color: "rgba(255,255,255,0.65)", lineHeight: 1.9, fontSize: "15px", marginBottom: "2rem" }}>
+                เราให้บริการด้านการผลิตสินค้าที่รวดเร็ว ตอบสนองความต้องการของคุณด้วยประสบการณ์ที่เราได้รับจากบริษัทชั้นนำหลายๆ บริษัท ที่ให้ความไว้วางใจ
+              </p>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.25)", borderRadius: "12px", padding: "14px 20px" }}>
+                <span style={{ fontSize: "22px" }}>💬</span>
+                <div>
+                  <div style={{ color: "#c9a84c", fontWeight: 700, fontSize: "14px" }}>"ทุกสิ่งเป็นไปได้เพื่อบริการที่ดีเยี่ยม"</div>
+                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", marginTop: "2px" }}>— IDEA BY IDO, Everything&apos;s Possible</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Factory Images grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              {FACTORY_IMAGES.slice(0, 4).map((img, i) => (
+                <div key={i} style={{ borderRadius: "12px", overflow: "hidden", aspectRatio: "4/3", position: "relative", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover" }} unoptimized />
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.65))", padding: "8px", fontSize: "11px", color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{img.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════════ SERVICES ═══════════════ */}
-      <section id="services" style={{ padding: "6rem 2rem", background: "#0d1526" }}>
+      <section id="services" style={{ padding: "6rem 2rem", background: "#0a0f1e" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <p style={{ color: "#c9a84c", fontSize: "12px", letterSpacing: "0.25em", fontWeight: 600, marginBottom: "12px" }}>WHAT WE MAKE</p>
@@ -224,7 +317,6 @@ export default function IdeaByIdoPage() {
                 onMouseEnter={(e) => { const d = e.currentTarget as HTMLDivElement; d.style.background = "rgba(201,168,76,0.08)"; d.style.borderColor = "rgba(201,168,76,0.25)"; d.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={(e) => { const d = e.currentTarget as HTMLDivElement; d.style.background = "rgba(255,255,255,0.04)"; d.style.borderColor = "rgba(255,255,255,0.08)"; d.style.transform = "translateY(0)"; }}
               >
-                {/* SVG icon */}
                 <div style={{ color: CATEGORY_COLORS[svc.category], marginBottom: "16px" }}>
                   {ServiceIcons[svc.category]}
                 </div>
@@ -236,6 +328,84 @@ export default function IdeaByIdoPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════ PHOTO GALLERY ═══════════════ */}
+      <section id="gallery" style={{ padding: "6rem 2rem", background: "#0d1526" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+            <p style={{ color: "#c9a84c", fontSize: "12px", letterSpacing: "0.25em", fontWeight: 600, marginBottom: "12px" }}>OUR PHOTOS</p>
+            <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 800, letterSpacing: "-0.02em" }}>ภาพถ่ายจากงานจริง</h2>
+          </div>
+
+          {/* Tab switcher */}
+          <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "2.5rem", flexWrap: "wrap" }}>
+            {([
+              { key: "clients",    label: "ผลงานลูกค้า" },
+              { key: "factory",    label: "โรงงานของเรา" },
+              { key: "production", label: "กระบวนการผลิต" },
+            ] as const).map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveGalleryTab(tab.key)}
+                style={{ padding: "10px 24px", borderRadius: "100px", border: "1px solid", fontSize: "13px", fontWeight: 600, cursor: "pointer", transition: "all 0.2s", background: activeGalleryTab === tab.key ? "#c9a84c" : "rgba(255,255,255,0.05)", borderColor: activeGalleryTab === tab.key ? "#c9a84c" : "rgba(255,255,255,0.12)", color: activeGalleryTab === tab.key ? "#0a0f1e" : "rgba(255,255,255,0.65)" }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Gallery Grid */}
+          {activeGalleryTab === "clients" && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
+              {GALLERY_IMAGES.map((img, i) => (
+                <div key={i} style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: i === 0 ? "16/9" : "4/3", border: "1px solid rgba(255,255,255,0.07)", gridColumn: i === 0 ? "span 2" : "span 1" }}>
+                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} unoptimized
+                    onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
+                    onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                  />
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.7))", padding: "16px 14px 12px" }}>
+                    <div style={{ display: "inline-block", background: "rgba(201,168,76,0.9)", color: "#0a0f1e", borderRadius: "6px", padding: "2px 8px", fontSize: "10px", fontWeight: 700, marginBottom: "4px" }}>{img.label}</div>
+                    <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "12px" }}>{img.alt}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeGalleryTab === "factory" && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+              {FACTORY_IMAGES.map((img, i) => (
+                <div key={i} style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: "4/3", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} unoptimized
+                    onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
+                    onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                  />
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.7))", padding: "12px" }}>
+                    <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "12px" }}>{img.alt}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeGalleryTab === "production" && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+              {PRODUCTION_IMAGES.map((img, i) => (
+                <div key={i} style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: "4/3", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} unoptimized
+                    onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
+                    onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                  />
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.7))", padding: "12px" }}>
+                    <div style={{ display: "inline-block", background: "rgba(201,168,76,0.85)", color: "#0a0f1e", borderRadius: "6px", padding: "2px 8px", fontSize: "10px", fontWeight: 700, marginBottom: "4px" }}>{img.label}</div>
+                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: "12px" }}>{img.alt}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -294,56 +464,76 @@ export default function IdeaByIdoPage() {
 
       {/* ═══════════════ PROCESS ═══════════════ */}
       <section id="process" style={{ padding: "6rem 2rem", background: "#0d1526" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start" }}>
+          <div>
             <p style={{ color: "#c9a84c", fontSize: "12px", letterSpacing: "0.25em", fontWeight: 600, marginBottom: "12px" }}>HOW WE WORK</p>
-            <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 800, letterSpacing: "-0.02em" }}>ขั้นตอนการสั่งผลิต</h2>
+            <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 800, letterSpacing: "-0.02em", marginBottom: "2.5rem" }}>ขั้นตอนการสั่งผลิต</h2>
+
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {PROCESS.map((step, i) => (
+                <div key={step.step} style={{ display: "flex", gap: "2rem", alignItems: "flex-start", paddingBottom: i < PROCESS.length - 1 ? "2rem" : "0", position: "relative" }}>
+                  {i < PROCESS.length - 1 && (
+                    <div style={{ position: "absolute", left: "28px", top: "60px", width: "2px", height: "calc(100% - 16px)", background: "linear-gradient(to bottom, rgba(201,168,76,0.4), rgba(201,168,76,0.05))" }} />
+                  )}
+                  <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "linear-gradient(135deg, #c9a84c22, #c9a84c44)", border: "1px solid rgba(201,168,76,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#c9a84c", fontWeight: 800, fontSize: "14px" }}>
+                    {step.step}
+                  </div>
+                  <div style={{ paddingTop: "12px" }}>
+                    <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "6px" }}>{step.title}</h3>
+                    <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "14px", lineHeight: 1.7 }}>{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            {PROCESS.map((step, i) => (
-              <div key={step.step} style={{ display: "flex", gap: "2rem", alignItems: "flex-start", paddingBottom: i < PROCESS.length - 1 ? "2rem" : "0", position: "relative" }}>
-                {i < PROCESS.length - 1 && (
-                  <div style={{ position: "absolute", left: "28px", top: "60px", width: "2px", height: "calc(100% - 16px)", background: "linear-gradient(to bottom, rgba(201,168,76,0.4), rgba(201,168,76,0.05))" }} />
-                )}
-                <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "linear-gradient(135deg, #c9a84c22, #c9a84c44)", border: "1px solid rgba(201,168,76,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#c9a84c", fontWeight: 800, fontSize: "14px" }}>
-                  {step.step}
-                </div>
-                <div style={{ paddingTop: "12px" }}>
-                  <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "6px" }}>{step.title}</h3>
-                  <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "14px", lineHeight: 1.7 }}>{step.desc}</p>
-                </div>
+          {/* Production photo showcase */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+            <div style={{ borderRadius: "14px", overflow: "hidden", gridColumn: "span 2", position: "relative", aspectRatio: "16/9", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <Image src="/ideabyido/img_p5_1_621x465.jpeg" alt="เครื่องจักรปักอัตโนมัติ" fill style={{ objectFit: "cover" }} unoptimized />
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.7))", padding: "12px" }}>
+                <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "12px", fontWeight: 500 }}>เครื่องปักอัตโนมัติสำหรับงานปักโลโก้</div>
               </div>
-            ))}
+            </div>
+            <div style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: "4/3", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <Image src="/ideabyido/img_p6_1_317x238.jpeg" alt="การตัดเย็บผ้า" fill style={{ objectFit: "cover" }} unoptimized />
+            </div>
+            <div style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: "4/3", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <Image src="/ideabyido/img_p5_9_534x400.jpeg" alt="เครื่องสกรีน" fill style={{ objectFit: "cover" }} unoptimized />
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════ CONTACT ═══════════════ */}
-      <section id="contact" style={{ padding: "6rem 2rem" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
-          <p style={{ color: "#c9a84c", fontSize: "12px", letterSpacing: "0.25em", fontWeight: 600, marginBottom: "12px" }}>GET IN TOUCH</p>
-          <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: "1.5rem" }}>
-            พร้อมรับผลิตยูนิฟอร์ม
-            <br />
-            <span style={{ background: "linear-gradient(135deg, #c9a84c, #f0d080)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              ตั้งแต่ 50 ชิ้นขึ้นไป
-            </span>
-          </h2>
-          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "16px", lineHeight: 1.8, marginBottom: "3rem" }}>
-            บรีฟงาน แนบโลโก้ และแจ้งจำนวน — ทีมเราจะติดต่อกลับภายใน 24 ชั่วโมง
-          </p>
+      <section id="contact" style={{ padding: "6rem 2rem", background: "#0a0f1e" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+            <p style={{ color: "#c9a84c", fontSize: "12px", letterSpacing: "0.25em", fontWeight: 600, marginBottom: "12px" }}>GET IN TOUCH</p>
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: "1rem" }}>
+              พร้อมรับผลิตยูนิฟอร์ม
+              <br />
+              <span style={{ background: "linear-gradient(135deg, #c9a84c, #f0d080)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                IDEA BY IDO CO., LTD
+              </span>
+            </h2>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px", lineHeight: 1.8 }}>
+              บรีฟงาน แนบโลโก้ และแจ้งจำนวน — ทีมเราจะติดต่อกลับภายใน 24 ชั่วโมง
+            </p>
+          </div>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
+          {/* Contact Cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", marginBottom: "2.5rem" }}>
             {[
-              { icon: <LineIcon />, label: "Line Official",   value: "@ideabyido",           href: "#" },
-              { icon: <PhoneIcon />, label: "โทรศัพท์",       value: "02-XXX-XXXX",          href: "tel:02XXXXXXX" },
-              { icon: <MailIcon />,  label: "อีเมล",          value: "factory@ideabyido.com", href: "mailto:factory@ideabyido.com" },
+              { icon: <LineIcon />, label: "Line Official",   value: "@ideabyido",           href: "https://line.me/ti/p/ideabyido" },
+              { icon: <PhoneIcon />, label: "โทรศัพท์ (เก๋)",  value: "064-424-1519",          href: "tel:0644241519" },
+              { icon: <PhoneIcon />, label: "โทรศัพท์ (อู๋)",  value: "093-879-6965",          href: "tel:0938796965" },
+              { icon: <MailIcon />,  label: "Fax",            value: "02-120-7521",            href: "#" },
             ].map((contact) => (
               <a
                 key={contact.label}
                 href={contact.href}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", padding: "28px 36px", background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: "16px", textDecoration: "none", minWidth: "160px", transition: "all 0.25s" }}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", padding: "24px 20px", background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: "16px", textDecoration: "none", transition: "all 0.25s" }}
                 onMouseEnter={(e) => { const a = e.currentTarget as HTMLAnchorElement; a.style.background = "rgba(201,168,76,0.12)"; a.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={(e) => { const a = e.currentTarget as HTMLAnchorElement; a.style.background = "rgba(201,168,76,0.06)"; a.style.transform = "translateY(0)"; }}
               >
@@ -352,6 +542,30 @@ export default function IdeaByIdoPage() {
                 <span style={{ color: "#c9a84c", fontSize: "14px", fontWeight: 600 }}>{contact.value}</span>
               </a>
             ))}
+          </div>
+
+          {/* Address */}
+          <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "24px 28px", display: "flex", gap: "20px", alignItems: "flex-start" }}>
+            <div style={{ color: "#c9a84c", flexShrink: 0, marginTop: "2px" }}><MapIcon /></div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: "15px", marginBottom: "6px" }}>ที่อยู่โรงงาน</div>
+              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", lineHeight: 1.8 }}>
+                79/253 ถนนพหลโยธิน ซอยพหลโยธิน 54/1 แยก 4<br />
+                แขวงสายไหม เขตสายไหม กรุงเทพมหานคร 10220
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", marginTop: "6px" }}>
+                79/253 Phahon Yothin 54/1 Alley, Lane 4, Sai Mai, Bangkok 10220
+              </div>
+              <a
+                href="https://goo.gl/maps/3xWWNbB7gr9azfxP6"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "12px", color: "#c9a84c", fontSize: "13px", fontWeight: 600, textDecoration: "none" }}
+              >
+                ดูแผนที่ Google Maps
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+              </a>
+            </div>
           </div>
         </div>
       </section>
