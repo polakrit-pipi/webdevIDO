@@ -10,9 +10,9 @@ const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
 // ── Bank account details ────────────────────────────────────────────────────
 const BANK_INFO = {
-  bankName: 'ธนาคารกสิกรไทย (KBank)',
-  accountNumber: '000-0-00000-0',
-  accountName: 'IDO Identity Co., Ltd.',
+  bankName: 'ธนาคารทหารไทย (TMB)',
+  accountNumber: '258-2-08731-4',
+  accountName: 'บจก. ไอเดีย บาย ไอดุ',
 };
 
 function formatTHB(amount: number) {

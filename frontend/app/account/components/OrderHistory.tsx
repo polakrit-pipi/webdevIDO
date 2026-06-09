@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Transaction } from "@/types/types";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { useCurrency } from "@/app/context/CurrencyContext";
+import ReturnRequestModal from "./ReturnRequestModal";
 
 interface OrderHistoryProps {
   orders: Transaction[];
@@ -31,6 +32,10 @@ export default function OrderHistory({ orders }: OrderHistoryProps) {
   const { formatPrice } = useCurrency();
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  // Track which order the return modal is open for
+  const [returnModalOrderId, setReturnModalOrderId] = useState<number | null>(null);
+  // Track which orders have been successfully returned in this session
+  const [returnedOrderIds, setReturnedOrderIds] = useState<Set<number>>(new Set());
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
@@ -208,6 +213,31 @@ export default function OrderHistory({ orders }: OrderHistoryProps) {
                       </div>
                     )}
 
+                    {/* Return request button — only for Delivered + payment confirmed */}
+                    {order.order_status === "Delivered" &&
+                      order.payment_status === "confirmed" && (
+                        <div className="pt-1 border-t border-gray-200">
+                          {returnedOrderIds.has(order.id) ? (
+                            <div className="flex items-center gap-2 text-green-600 text-sm bg-green-50 px-4 py-2.5 rounded-xl">
+                              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              ส่งคำขอคืนสินค้าเรียบร้อยแล้ว ทีมงานจะติดต่อกลับ
+                            </div>
+                          ) : (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setReturnModalOrderId(order.id); }}
+                              className="w-full flex items-center justify-center gap-2 text-sm text-gray-600 border border-gray-200 rounded-xl py-2.5 hover:border-gray-400 hover:bg-gray-50 transition"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 6a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              ขอคืน / เปลี่ยนสินค้า
+                            </button>
+                          )}
+                        </div>
+                      )}
+
                     {/* Total */}
                     <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                       <p className="text-sm text-gray-500">ยอดรวม</p>
@@ -226,6 +256,25 @@ export default function OrderHistory({ orders }: OrderHistoryProps) {
           </p>
         )}
       </div>
+
+      {/* Return Request Modal */}
+      {returnModalOrderId !== null && (() => {
+        const order = orders.find((o) => o.id === returnModalOrderId);
+        if (!order) return null;
+        const items = (order as any).items ?? [];
+        return (
+          <ReturnRequestModal
+            orderId={order.id}
+            documentId={order.documentId}
+            orderItems={items}
+            onClose={() => setReturnModalOrderId(null)}
+            onSuccess={() => {
+              setReturnedOrderIds((prev) => new Set(prev).add(returnModalOrderId));
+              setReturnModalOrderId(null);
+            }}
+          />
+        );
+      })()}
     </div>
   );
 }

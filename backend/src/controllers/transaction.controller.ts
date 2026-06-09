@@ -138,3 +138,101 @@ export const submitSlip = async (req: Request, res: Response, next: NextFunction
     next(error);
   }
 };
+
+/**
+ * POST /api/transactions/:documentId/return
+ * Authenticated user requests a return/replacement for their own delivered order.
+ *
+ * Body:
+ * {
+ *   returnReason: "สินค้าชำรุด" | "ผิดไซส์" | "ผิดสี" | "อื่นๆ"
+ *   reasonDetail?: string
+ *   items: Array<{ productName: string; originalSku: string; newSku: string; quantity: number }>
+ * }
+ */
+export const requestReturn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const documentId = req.params.documentId as string;
+    const userId = req.user?.id;
+    const { returnReason, reasonDetail, items } = req.body;
+
+    // ── Validate input ──────────────────────────────────────────
+    if (!returnReason) {
+      res.status(400).json({ error: { message: 'returnReason is required' } });
+      return;
+    }
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      res.status(400).json({ error: { message: 'items array is required and must not be empty' } });
+      return;
+    }
+
+    // ── Find original order ─────────────────────────────────────
+    const order = await prisma.transaction.findUnique({
+      where: { documentId },
+      include: { items: { include: { product: true } } },
+    });
+    if (!order) {
+      res.status(404).json({ error: { message: 'Transaction not found' } });
+      return;
+    }
+
+    // ── Ownership check ─────────────────────────────────────────
+    if (order.userId !== userId) {
+      res.status(403).json({ error: { message: 'Forbidden: this order does not belong to you' } });
+      return;
+    }
+
+    // ── Business rules ──────────────────────────────────────────
+    if (order.order_status !== 'Delivered') {
+      res.status(400).json({
+        error: { message: 'คำขอคืนสินค้าทำได้เฉพาะ order ที่ได้รับแล้ว (Delivered) เท่านั้น' },
+      });
+      return;
+    }
+    if (order.payment_status !== 'confirmed') {
+      res.status(400).json({
+        error: { message: 'คำขอคืนสินค้าทำได้เฉพาะ order ที่ยืนยันการชำระเงินแล้วเท่านั้น' },
+      });
+      return;
+    }
+
+    // ── Prevent duplicate active return ─────────────────────────
+    const existingReturn = await prisma.returnOrder.findFirst({
+      where: {
+        originalOrderId: order.id,
+        status: { notIn: ['Cancelled'] },
+      },
+    });
+    if (existingReturn) {
+      res.status(409).json({
+        error: { message: 'มีคำขอคืนสินค้าที่กำลังดำเนินการอยู่แล้วสำหรับ order นี้' },
+      });
+      return;
+    }
+
+    // ── Create ReturnOrder ───────────────────────────────────────
+    const returnOrder = await prisma.returnOrder.create({
+      data: {
+        originalOrderId: order.id,
+        returnReason: reasonDetail ? `${returnReason}: ${reasonDetail}` : returnReason,
+        items: items,
+        itemsPrice: 0,
+        shippingCost: 0,
+        shippingAddress: order.shipping_address,
+        status: 'Pending',
+      },
+      include: {
+        originalOrder: {
+          include: {
+            user: { select: { id: true, username: true, email: true } },
+            items: { include: { product: { select: { id: true, ProductName: true } } } },
+          },
+        },
+      },
+    });
+
+    res.status(201).json(returnOrder);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { getTransactions, getTransaction, createTransaction, submitSlip } from '../controllers/transaction.controller';
+import { getTransactions, getTransaction, createTransaction, submitSlip, requestReturn } from '../controllers/transaction.controller';
 import { authenticate } from '../middleware/auth';
 
 const router = Router();
@@ -34,5 +34,8 @@ router.get('/', authenticate, getTransactions);
 router.get('/:documentId', authenticate, getTransaction);
 router.post('/', authenticate, createTransaction);
 router.put('/:documentId/slip', authenticate, submitSlip);
+
+// ── Return request — customer initiates a return/replacement ──
+router.post('/:documentId/return', authenticate, requestReturn);
 
 export default router;

@@ -755,7 +755,7 @@ export const adminCreateReturnOrder = async (req: Request, res: Response, next: 
   } catch (err) { next(err); }
 };
 
-/** PUT /api/admin/returns/:id — update status, tracking, note */
+/** PUT /api/admin/returns/:id — update status, tracking, note + stock management */
 export const adminUpdateReturnOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const id = pid(req.params.id);
@@ -767,16 +767,111 @@ export const adminUpdateReturnOrder = async (req: Request, res: Response, next: 
       return;
     }
 
-    const ret = await prisma.returnOrder.update({
+    // Fetch current return order with original order items before update
+    const existing = await prisma.returnOrder.findUnique({
       where: { id },
-      data: {
-        ...(status !== undefined && { status }),
-        ...(trackingInfo !== undefined && { trackingInfo }),
-        ...(adminNote !== undefined && { adminNote }),
-        ...(shippingCost !== undefined && { shippingCost: parseFloat(shippingCost) }),
-        ...(itemsPrice !== undefined && { itemsPrice: parseFloat(itemsPrice) }),
+      include: {
+        originalOrder: {
+          include: { items: true },
+        },
       },
     });
+    if (!existing) {
+      res.status(404).json({ error: { message: 'Return order not found' } });
+      return;
+    }
+
+    const ret = await prisma.$transaction(async (tx) => {
+      // ─────────────────────────────────────────────────────────────────
+      // STOCK MANAGEMENT: trigger when status changes to "Shipped"
+      // Logic:
+      //   1. Return old items BACK to stock (+qty) — customer returned them
+      //   2. Deduct new replacement items FROM stock (-qty) — we ship new ones
+      // ─────────────────────────────────────────────────────────────────
+      if (status === 'Shipped' && existing.status !== 'Shipped') {
+        // Step 1: Add back stock for original order items (returned by customer)
+        for (const item of existing.originalOrder.items) {
+          if (item.selected_sku) {
+            await tx.productVariant.updateMany({
+              where: { sku: item.selected_sku },
+              data: { stockqty: { increment: item.quantity } },
+            });
+          }
+        }
+
+        // Step 2: Deduct stock for replacement items (new items being shipped out)
+        const replacementItems = existing.items as Array<{
+          sku?: string;
+          originalSku?: string;
+          newSku?: string;
+          quantity: number;
+          productName?: string;
+        }>;
+        for (const item of replacementItems) {
+          // Support both "sku"/"newSku" field naming from frontend
+          const skuToDeduct = item.newSku || item.sku;
+          if (skuToDeduct) {
+            await tx.productVariant.updateMany({
+              where: { sku: skuToDeduct },
+              data: { stockqty: { decrement: item.quantity } },
+            });
+          }
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────────
+      // STOCK REVERSAL: if cancelled AFTER already being shipped
+      // Reverse the stock changes made when status was "Shipped"
+      // ─────────────────────────────────────────────────────────────────
+      if (status === 'Cancelled' && existing.status === 'Shipped') {
+        // Reverse Step 1: remove the returned items from stock again
+        for (const item of existing.originalOrder.items) {
+          if (item.selected_sku) {
+            await tx.productVariant.updateMany({
+              where: { sku: item.selected_sku },
+              data: { stockqty: { decrement: item.quantity } },
+            });
+          }
+        }
+
+        // Reverse Step 2: add back the replacement items that were deducted
+        const replacementItems = existing.items as Array<{
+          sku?: string;
+          originalSku?: string;
+          newSku?: string;
+          quantity: number;
+        }>;
+        for (const item of replacementItems) {
+          const skuToRestore = item.newSku || item.sku;
+          if (skuToRestore) {
+            await tx.productVariant.updateMany({
+              where: { sku: skuToRestore },
+              data: { stockqty: { increment: item.quantity } },
+            });
+          }
+        }
+      }
+
+      return tx.returnOrder.update({
+        where: { id },
+        data: {
+          ...(status !== undefined && { status }),
+          ...(trackingInfo !== undefined && { trackingInfo }),
+          ...(adminNote !== undefined && { adminNote }),
+          ...(shippingCost !== undefined && { shippingCost: parseFloat(shippingCost) }),
+          ...(itemsPrice !== undefined && { itemsPrice: parseFloat(itemsPrice) }),
+        },
+        include: {
+          originalOrder: {
+            include: {
+              user: { select: { id: true, username: true, email: true } },
+              items: { include: { product: { select: { id: true, ProductName: true } } } },
+            },
+          },
+        },
+      });
+    });
+
     res.json(ret);
   } catch (err) { next(err); }
 };
