@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
 import prisma from '../config/database';
 import { wrapCollection, wrapSingle } from '../utils/strapiCompat';
 
@@ -218,7 +219,7 @@ export const requestReturn = async (req: Request, res: Response, next: NextFunct
         items: items,
         itemsPrice: 0,
         shippingCost: 0,
-        shippingAddress: order.shipping_address,
+        shippingAddress: order.shipping_address ?? Prisma.JsonNull,
         status: 'Pending',
       },
       include: {
