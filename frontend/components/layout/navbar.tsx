@@ -181,12 +181,13 @@ export default function Navbar() {
       <div className="flex flex-col gap-1.5 w-[20vw] text-center justify-center items-center">
         <Link
           href={'/'}
-          aria-label="IDEABYIDO — Home"
+          aria-label="IDEABYIDO Bangkok — Home"
           lang="en"
           className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
           style={{ fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif', lineHeight: 1 }}
         >
           <p className={`leading-none transition-all duration-300 tracking-tight ${isScrolled ? 'text-[2vw]' : 'text-[2.7vw]'}`}>IDEABYIDO</p>
+          <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[1vw]' : 'text-[1.3vw]'}`}>BANGKOK</p>
         </Link>
       </div>
 

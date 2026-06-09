@@ -27,9 +27,38 @@ const notoSansThai = Noto_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "IDEABYIDO",
-  description: "IDEABYIDO — A clothing brand focused on simplicity, modernity, and reflecting the wearer's identity.",
+  metadataBase: new URL("https://ideabyido.com"),
+  title: {
+    default: "IDEABYIDO — แฟชั่น & รับผลิตยูนิฟอร์ม",
+    template: "%s | IDEABYIDO",
+  },
+  description:
+    "IDEABYIDO — แบรนด์เสื้อผ้าแฟชั่นและโรงงานผลิตยูนิฟอร์มครบวงจร เน้นคุณภาพ ทันสมัย สะท้อนตัวตน รับผลิตเสื้อ กางเกง ชุดพนักงาน ทุกประเภท",
+  keywords: [
+    "ideabyido", "ido identity", "เสื้อผ้าแฟชั่น", "ยูนิฟอร์ม", "รับผลิตยูนิฟอร์ม",
+    "ชุดพนักงาน", "เสื้อบริษัท", "uniform factory", "แฟชั่นไทย", "เสื้อผ้าออนไลน์",
+  ],
+  authors: [{ name: "IDEABYIDO" }],
+  creator: "IDEABYIDO",
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+  alternates: { canonical: "https://ideabyido.com" },
+  openGraph: {
+    type: "website",
+    locale: "th_TH",
+    url: "https://ideabyido.com",
+    siteName: "IDEABYIDO",
+    title: "IDEABYIDO — แฟชั่น & รับผลิตยูนิฟอร์ม",
+    description: "แบรนด์เสื้อผ้าแฟชั่นและโรงงานผลิตยูนิฟอร์มครบวงจร คุณภาพสูง ราคาดี",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "IDEABYIDO" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IDEABYIDO — แฟชั่น & รับผลิตยูนิฟอร์ม",
+    description: "แบรนด์เสื้อผ้าแฟชั่นและโรงงานผลิตยูนิฟอร์มครบวงจร",
+    images: ["/og-image.png"],
+  },
 };
+
 
 export default function RootLayout({
   children,
