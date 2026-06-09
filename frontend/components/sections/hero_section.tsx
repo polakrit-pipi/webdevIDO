@@ -53,10 +53,11 @@ export default function Hero_section() {
         <div className="relative z-10 flex flex-col items-center text-center px-8">
           {/* Label */}
           <p
-            className="text-xs sm:text-sm tracking-[0.35em] uppercase mb-4 transition-all duration-500"
+            className="text-lg sm:text-xl font-semibold tracking-[0.25em] uppercase mb-4 transition-all duration-500"
             style={{
-              color: hovered === "ido" ? "#d8b4fe" : "#a78bfa",
-              letterSpacing: "0.35em",
+              color: hovered === "ido" ? "#e9d5ff" : "#c4b5fd",
+              letterSpacing: "0.25em",
+              textShadow: "0 2px 12px rgba(0,0,0,0.8)",
             }}
           >
             FASHION &amp; LIFESTYLE
@@ -170,9 +171,10 @@ export default function Hero_section() {
         <div className="relative z-10 flex flex-col items-center text-center px-8">
           {/* Label */}
           <p
-            className="text-xs sm:text-sm tracking-[0.35em] uppercase mb-4 transition-all duration-500"
+            className="text-lg sm:text-xl font-semibold tracking-[0.25em] uppercase mb-4 transition-all duration-500"
             style={{
-              color: hovered === "idea" ? "#fcd34d" : "#d4a017",
+              color: hovered === "idea" ? "#fde68a" : "#fbbf24",
+              textShadow: "0 2px 12px rgba(0,0,0,0.8)",
             }}
           >
             UNIFORM FACTORY
