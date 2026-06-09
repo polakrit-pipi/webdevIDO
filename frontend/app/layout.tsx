@@ -27,8 +27,8 @@ const notoSansThai = Noto_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "IDOIDENTITY",
-  description: "IDOIDENTITY — A clothing brand focused on simplicity, modernity, and reflecting the wearer's identity.",
+  title: "IDEABYIDO",
+  description: "IDEABYIDO — A clothing brand focused on simplicity, modernity, and reflecting the wearer's identity.",
 };
 
 export default function RootLayout({
