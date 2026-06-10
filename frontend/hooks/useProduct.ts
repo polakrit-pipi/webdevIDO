@@ -29,7 +29,17 @@ export const getProductVariantImage = (variant: any) => {
   if (!variant) return null;
   const imgData = variant.Image || variant.image;
   if (!imgData) return null;
-  return Array.isArray(imgData) ? imgData[0] : imgData;
+
+  // Case 1: Array of objects [{url: "..."}]
+  if (Array.isArray(imgData)) {
+    return imgData[0] ?? null;
+  }
+  // Case 2: Plain string "/uploads/xxx.jpg"
+  if (typeof imgData === "string") {
+    return { url: imgData };
+  }
+  // Case 3: Object {url: "..."}
+  return imgData;
 };
 
 // ==========================================
