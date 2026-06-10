@@ -7,7 +7,7 @@ import ProductDescription from "../../../components/productDescription";
 interface StrapiImage {
     url: string;
     alternativeText?: string;
-    name: string;
+    name?: string;
 }
 
 interface Variant {
@@ -18,7 +18,7 @@ interface Variant {
     stockqty: number;
     pricing: number;
     salePricing?: number;
-    Image?: StrapiImage[]; 
+    Image?: StrapiImage[] | StrapiImage | string; 
 }
 
 interface CleanedProduct {
@@ -62,6 +62,29 @@ const { slug } = await params;
             throw new Error("Product data or variants missing");
         }
 
+        // Helper: normalize Image field → handles string | {url} | [{url}] → full URL string[]
+        const normalizeImages = (variants: any[]): string[] => {
+            const urls = new Set<string>();
+            for (const v of variants) {
+                const img = v.Image;
+                if (!img) continue;
+                if (typeof img === "string") {
+                    // Plain string path: "/uploads/xxx.jpg"
+                    urls.add(img.startsWith("http") ? img : `${PUBLIC_API}${img}`);
+                } else if (Array.isArray(img)) {
+                    // Array of objects: [{url: "..."}]
+                    img.forEach((i: any) => {
+                        if (i?.url) urls.add(i.url.startsWith("http") ? i.url : `${PUBLIC_API}${i.url}`);
+                    });
+                } else if ((img as any)?.url) {
+                    // Single object: {url: "..."}
+                    const url = (img as any).url;
+                    urls.add(url.startsWith("http") ? url : `${PUBLIC_API}${url}`);
+                }
+            }
+            return Array.from(urls);
+        };
+
         // 3. Map the data safely to your object
         product = {
             documentId: data.documentId,
@@ -73,11 +96,7 @@ const { slug } = await params;
             colors: Array.from(new Set(data.variants.map((v: Variant) => v.color))).filter(Boolean) as string[],
             sizes: Array.from(new Set(data.variants.map((v: Variant) => v.size))).filter(Boolean) as string[],
             
-            images: Array.from(new Set(
-                data.variants
-                    .flatMap((v: Variant) => v.Image || []) // Media: Image (multiple: true) 
-                    .map((img: StrapiImage) => img.url.startsWith('http') ? img.url : `${PUBLIC_API}${img.url}`)
-            )) as string[],
+            images: normalizeImages(data.variants),
             variants: data.variants
         };
 
