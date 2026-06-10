@@ -39,7 +39,7 @@ const storage = multer.diskStorage({
     cb(null, `${unique}${path.extname(file.originalname)}`);
   },
 });
-const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10 MB
+const upload = multer({ storage, limits: { fileSize: 20 * 1024 * 1024 } }); // 20 MB
 
 // ── Public ── login only ───────────────────────────────────────
 router.post('/login', adminLogin);
@@ -102,7 +102,19 @@ router.put('/orders/:id/status', adminUpdateOrderStatus);
 router.put('/orders/:id/payment', adminVerifyPayment);
 
 // File Upload
-router.post('/upload', upload.single('file'), adminUploadFile);
+router.post('/upload', (req, res, next) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        res.status(413).json({ error: { status: 413, message: 'File too large. Maximum size is 20MB.' } });
+        return;
+      }
+      next(err);
+      return;
+    }
+    next();
+  });
+}, adminUploadFile);
 
 // Return Orders (Return & Replacement)
 router.get('/returns', adminGetReturnOrders);
