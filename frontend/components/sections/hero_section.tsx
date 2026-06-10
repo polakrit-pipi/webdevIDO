@@ -35,7 +35,7 @@ export default function Hero_section() {
           className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80')",
+              "url('/hero-ido.jpg')",
           }}
         />
         {/* Dark overlay */}
