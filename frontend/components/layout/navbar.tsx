@@ -177,17 +177,23 @@ export default function Navbar() {
         </Link>
       </div>
 
-      {/* mid — wordmark */}
-      <div className="flex flex-col gap-1.5 w-[20vw] text-center justify-center items-center">
+      {/* mid — logo */}
+      <div className="flex w-[20vw] justify-center items-center">
         <Link
           href={'/'}
           aria-label="IDEABYIDO Bangkok — Home"
-          lang="en"
           className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5F4B8B] rounded-sm"
-          style={{ fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif', lineHeight: 1 }}
         >
-          <p className={`leading-none transition-all duration-300 tracking-tight ${isScrolled ? 'text-[2vw]' : 'text-[2.7vw]'}`}>IDEABYIDO</p>
-          <p className={`leading-none transition-all duration-300 ${isScrolled ? 'text-[1vw]' : 'text-[1.3vw]'}`}>BANGKOK</p>
+          <div className={`relative transition-all duration-300 ${isScrolled ? 'h-[3.5vw] min-h-[36px]' : 'h-[5vw] min-h-[48px]'}`}
+               style={{ aspectRatio: '1274 / 693' }}>
+            <Image
+              src="/logo.jpg"
+              fill
+              alt="IDEABYIDO Bangkok — Made in Thailand"
+              className="object-contain"
+              priority
+            />
+          </div>
         </Link>
       </div>
 
