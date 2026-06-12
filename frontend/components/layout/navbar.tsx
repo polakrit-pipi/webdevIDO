@@ -187,7 +187,7 @@ export default function Navbar() {
           <div className={`relative transition-all duration-300 ${isScrolled ? 'h-[3.5vw] min-h-[36px]' : 'h-[5vw] min-h-[48px]'}`}
                style={{ aspectRatio: '1274 / 693' }}>
             <Image
-              src="/logo.jpg"
+              src="/logo.png"
               fill
               alt="IDEABYIDO Bangkok — Made in Thailand"
               className="object-contain"
