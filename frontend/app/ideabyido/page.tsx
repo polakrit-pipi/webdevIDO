@@ -528,7 +528,6 @@ export default function IdeaByIdoPage() {
               { icon: <LineIcon />, label: "Line Official",   value: "@ideabyido",           href: "https://line.me/ti/p/ideabyido" },
               { icon: <PhoneIcon />, label: "โทรศัพท์ (เก๋)",  value: "064-424-1519",          href: "tel:0644241519" },
               { icon: <PhoneIcon />, label: "โทรศัพท์ (อู๋)",  value: "093-879-6965",          href: "tel:0938796965" },
-              { icon: <MailIcon />,  label: "Fax",            value: "02-120-7521",            href: "#" },
             ].map((contact) => (
               <a
                 key={contact.label}
