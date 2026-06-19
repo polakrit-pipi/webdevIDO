@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Plus, Pencil, Trash2, Search, Star, X, Upload, ImagePlus } from 'lucide-react';
 import { toast } from 'sonner';
-import api from '@/lib/api';
+import api, { resolveImageUrl } from '@/lib/api';
 
 // ─── Types ───────────────────────────────────────────────
 interface UniformProject {
@@ -324,7 +324,7 @@ export default function UniformProjectsPage() {
                           }}
                         >
                           {p.coverImage ? (
-                            <img src={p.coverImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={resolveImageUrl(p.coverImage)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={CATEGORY_COLORS[p.category] ?? '#64748b'} strokeWidth="1.5" opacity="0.6">
                               <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -499,7 +499,7 @@ export default function UniformProjectsPage() {
                     {form.coverImage ? (
                       <div style={{ position: 'relative', display: 'inline-block' }}>
                         <img
-                          src={form.coverImage}
+                          src={resolveImageUrl(form.coverImage)}
                           alt="cover"
                           style={{ width: '160px', height: '110px', objectFit: 'cover', borderRadius: '8px', display: 'block' }}
                         />
@@ -553,7 +553,7 @@ export default function UniformProjectsPage() {
                       {additionalImages.map((url, idx) => (
                         <div key={idx} style={{ position: 'relative' }}>
                           <img
-                            src={url}
+                            src={resolveImageUrl(url)}
                             alt={`extra-${idx}`}
                             style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
                           />

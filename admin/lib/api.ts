@@ -27,4 +27,14 @@ api.interceptors.response.use(
   }
 );
 
+/**
+ * Convert a relative upload path (/uploads/xxx.jpg) to an absolute URL.
+ * Absolute URLs (http/https) are returned as-is.
+ */
+export function resolveImageUrl(url?: string | null): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${API_BASE}${url}`;
+}
+
 export default api;
