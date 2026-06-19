@@ -588,8 +588,16 @@ function ProjectCard({ project }: { project: UniformProject }) {
         onMouseLeave={(e) => { const d = e.currentTarget as HTMLDivElement; d.style.transform = "translateY(0)"; d.style.borderColor = "rgba(255,255,255,0.08)"; d.style.boxShadow = "none"; }}
       >
         {/* Image */}
-        <div style={{ height: "220px", background: coverSrc ? `url(${coverSrc}) center/cover no-repeat` : `linear-gradient(135deg, ${catColor}18, ${catColor}30)`, position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {!coverSrc && <ImagePlaceholder color={catColor} />}
+        <div style={{ height: "220px", background: coverSrc ? "transparent" : `linear-gradient(135deg, ${catColor}18, ${catColor}30)`, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+          {coverSrc ? (
+            <img
+              src={coverSrc}
+              alt={project.title}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <ImagePlaceholder color={catColor} />
+          )}
           {project.featured && (
             <div style={{ position: "absolute", top: "12px", right: "12px", background: "linear-gradient(135deg, #c9a84c, #f0d080)", color: "#0a0f1e", borderRadius: "100px", padding: "3px 10px", fontSize: "11px", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px" }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>

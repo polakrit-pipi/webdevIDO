@@ -657,6 +657,8 @@ export const adminUploadFile = (req: Request, res: Response): void => {
     res.status(400).json({ error: { message: 'No file uploaded' } });
     return;
   }
+  // Always return relative path (/uploads/...) so the frontend proxy can serve it
+  // regardless of environment (Docker, Vercel, local dev)
   const relativePath = `/uploads/${req.file.filename}`;
   res.json({ url: relativePath, originalname: req.file.originalname, size: req.file.size });
 };
