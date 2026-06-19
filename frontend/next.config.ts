@@ -4,8 +4,9 @@ const nextConfig: NextConfig = {
   // 'standalone' is needed for Docker but breaks Vercel — skip it there
   output: process.env.VERCEL ? undefined : 'standalone',
   async rewrites() {
-    const backendUrl = process.env.STRAPI_INTERNAL_URL || 'http://localhost:1337';
-    const adminUrl = process.env.ADMIN_INTERNAL_URL || 'http://localhost:3001';
+    // In Docker, containers communicate via service names (not localhost)
+    const backendUrl = process.env.STRAPI_INTERNAL_URL || 'http://backend:1337';
+    const adminUrl = process.env.ADMIN_INTERNAL_URL || 'http://admin:3001';
 
     // On Vercel there's no admin or backend container — use only /uploads proxy
     if (process.env.VERCEL) {
