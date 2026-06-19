@@ -150,12 +150,13 @@ export default function ProjectDetailPage() {
             <div
               style={{
                 width: "100%",
-                aspectRatio: "16/9",
+                minHeight: "400px",
+                maxHeight: "600px",
+                aspectRatio: "auto",
                 borderRadius: "20px",
                 overflow: "hidden",
-                background: allImages[activeImg]
-                  ? "transparent"
-                  : `linear-gradient(135deg, ${catColor}22, ${catColor}44)`,
+                background: "#0a0f1e",
+                border: "1px solid rgba(255,255,255,0.07)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -166,7 +167,7 @@ export default function ProjectDetailPage() {
                 <img
                   src={allImages[activeImg]}
                   alt={project.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  style={{ width: "100%", height: "100%", objectFit: "contain", background: "#0a0f1e" }}
                 />
               ) : (
                 <span style={{ fontSize: "5rem", opacity: 0.3 }}>🏭</span>
