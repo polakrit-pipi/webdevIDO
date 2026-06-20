@@ -2,23 +2,44 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-// ── Multi-color letters helper ──────────────────────────────
-const FASHION_COLORS = ["#f59e0b", "#ef4444", "#22c55e", "#f97316", "#3b82f6", "#ec4899", "#8b5cf6"];
-const LIFESTYLE_COLORS = ["#06b6d4", "#84cc16", "#f43f5e", "#a855f7", "#14b8a6", "#fb923c", "#6366f1", "#10b981", "#eab308"];
+// ── Multi-color letters ──────────────────────────────────────
+const COLORS = ["#f59e0b","#ef4444","#22c55e","#3b82f6","#ec4899","#8b5cf6","#06b6d4","#f97316","#84cc16"];
 
-function ColorfulText({ text, colors }: { text: string; colors: string[] }) {
+function ColorfulText({ text }: { text: string }) {
+  let ci = 0;
   return (
     <>
       {text.split("").map((char, i) =>
-        char === " " ? (
-          <span key={i}>&nbsp;</span>
+        char === " " || char === "&" ? (
+          <span key={i} style={{ color: "#ffffff" }}>{char}</span>
         ) : (
-          <span key={i} style={{ color: colors[i % colors.length], display: "inline-block" }}>
-            {char}
-          </span>
+          <span key={i} style={{ color: COLORS[ci++ % COLORS.length] }}>{char}</span>
         )
       )}
     </>
+  );
+}
+
+// ── Social Icon Button ───────────────────────────────────────
+function SocialBtn({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={e => e.stopPropagation()}
+      style={{
+        width: 40, height: 40, borderRadius: "50%",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: "rgba(255,255,255,0.15)",
+        border: "1px solid rgba(255,255,255,0.35)",
+        color: "#fff",
+        backdropFilter: "blur(8px)",
+        flexShrink: 0,
+      }}
+    >
+      {children}
+    </a>
   );
 }
 
@@ -26,287 +47,272 @@ export default function Hero_section() {
   const [visible, setVisible] = useState(false);
   const [hovered, setHovered] = useState<"ido" | "idea" | null>(null);
 
-  useEffect(() => {
-    setTimeout(() => setVisible(true), 50);
-  }, []);
+  useEffect(() => { setTimeout(() => setVisible(true), 50); }, []);
 
   return (
     <section
       aria-label="Site selector"
-      className={`w-full flex flex-col sm:flex-row relative overflow-hidden transition-opacity duration-700 ${
-        visible ? "opacity-100" : "opacity-0"
-      }`}
-      style={{ minHeight: "100svh" }}
+      style={{
+        width: "100%",
+        minHeight: "100svh",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.7s ease",
+      }}
     >
-      {/* ─── IDO IDENTITY (Left) ─────────────────────────────── */}
-      <Link
-        href="/product"
-        id="selector-ido-identity"
-        className="relative flex-1 flex flex-col items-center justify-center cursor-pointer overflow-hidden group"
-        onMouseEnter={() => setHovered("ido")}
-        onMouseLeave={() => setHovered(null)}
-        style={{
-          transition: "flex 0.6s cubic-bezier(0.4,0,0.2,1)",
-          flex: hovered === "ido" ? "1.4" : hovered === "idea" ? "0.6" : "1",
-          minHeight: "60svh",
-        }}
-      >
-        {/* Background image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-          style={{ backgroundImage: "url('/hero-ido.jpg')" }}
-        />
-        {/* Dark overlay */}
-        <div
-          className="absolute inset-0 transition-all duration-500"
+      {/* ─── Row on desktop, Column on mobile ── */}
+      <div style={{ display: "flex", flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
+
+        {/* ══ IDO IDENTITY ══════════════════════════════════════ */}
+        <Link
+          href="/product"
+          id="selector-ido-identity"
+          onMouseEnter={() => setHovered("ido")}
+          onMouseLeave={() => setHovered(null)}
           style={{
-            background:
-              hovered === "ido"
-                ? "linear-gradient(135deg, rgba(10,5,20,0.55) 0%, rgba(80,40,120,0.45) 100%)"
-                : "linear-gradient(135deg, rgba(10,5,20,0.72) 0%, rgba(40,20,60,0.65) 100%)",
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textDecoration: "none",
+            overflow: "hidden",
+            // Desktop: side-by-side; Mobile: full width stacked
+            flex: "1 1 300px",
+            minHeight: "55svh",
+            transition: "flex 0.6s cubic-bezier(0.4,0,0.2,1)",
           }}
-        />
+        >
+          {/* BG */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: "url('/hero-ido.jpg')",
+            backgroundSize: "cover", backgroundPosition: "center",
+            transform: hovered === "ido" ? "scale(1.06)" : "scale(1)",
+            transition: "transform 0.7s ease",
+          }} />
+          {/* Overlay */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: hovered === "ido"
+              ? "linear-gradient(135deg,rgba(10,5,20,0.52),rgba(80,40,120,0.42))"
+              : "linear-gradient(135deg,rgba(10,5,20,0.70),rgba(40,20,60,0.62))",
+            transition: "background 0.5s",
+          }} />
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-6 sm:px-8">
-          {/* Label — แฟชั่น & ไลฟ์สไตล์ (multi-color, always visible) */}
-          <p
-            className="font-black tracking-[0.15em] uppercase mb-2 transition-all duration-500"
-            style={{
-              fontSize: "clamp(0.85rem, 3.5vw, 1.5rem)",
-              textShadow: "0 2px 16px rgba(0,0,0,0.9)",
-              lineHeight: 1.3,
-              whiteSpace: "nowrap",
-            }}
-          >
-            <ColorfulText text="แฟชั่น & ไลฟ์สไตล์" colors={FASHION_COLORS} />
-          </p>
+          {/* Content */}
+          <div style={{
+            position: "relative", zIndex: 10,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", textAlign: "center",
+            padding: "clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 3rem)",
+            gap: "0.5rem",
+          }}>
+            {/* แฟชั่น & ไลฟ์สไตล์ */}
+            <p style={{
+              fontSize: "clamp(0.8rem, 2.5vw, 1.1rem)",
+              fontWeight: 900,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+              marginBottom: "0.5rem",
+              lineHeight: 1.4,
+            }}>
+              <ColorfulText text="แฟชั่น & ไลฟ์สไตล์" />
+            </p>
 
-          <h2
-            className="font-black leading-none mb-6 transition-all duration-500"
-            style={{
-              fontSize: "clamp(3rem, 8vw, 6rem)",
+            {/* Heading */}
+            <h2 style={{
+              fontSize: "clamp(3rem, 9vw, 6rem)",
+              fontWeight: 900,
               color: "#ffffff",
-              fontFamily: "'Geist', sans-serif",
+              lineHeight: 1,
               letterSpacing: "-0.02em",
-              textShadow:
-                hovered === "ido"
-                  ? "0 0 60px rgba(167,139,250,0.6)"
-                  : "none",
-            }}
-          >
-            IDO
-            <br />
-            IDENTITY
-          </h2>
+              margin: 0,
+              textShadow: hovered === "ido" ? "0 0 60px rgba(167,139,250,0.6)" : "none",
+              transition: "text-shadow 0.5s",
+            }}>
+              IDO<br />IDENTITY
+            </h2>
 
-          <p
-            className="text-white/70 text-sm sm:text-base mb-3 max-w-xs leading-relaxed transition-all duration-500"
-            style={{ opacity: hovered === "ido" ? 1 : 0.7 }}
-          >
-            เสื้อผ้าแฟชั่น — สะท้อนตัวตนที่แท้จริงของคุณ
-          </p>
+            {/* Sub */}
+            <p style={{
+              color: "rgba(255,255,255,0.72)",
+              fontSize: "clamp(0.8rem, 2vw, 1rem)",
+              lineHeight: 1.7,
+              margin: "0.75rem 0",
+              maxWidth: "26ch",
+            }}>
+              เสื้อผ้าแฟชั่น — สะท้อนตัวตนที่แท้จริงของคุณ
+            </p>
 
-          {/* Social links */}
-          <div className="flex items-center gap-3 mb-4">
-            <a
-              href="https://www.facebook.com/share/p/18kWjasgNV/?mibextid=wwXIfr"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                width: 36, height: 36, borderRadius: "50%",
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.3)",
-                backdropFilter: "blur(8px)",
-                color: "#fff", transition: "all 0.2s",
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#1877f2"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.15)"; }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-              </svg>
-            </a>
-            <a
-              href="https://www.instagram.com/idoidentity"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                width: 36, height: 36, borderRadius: "50%",
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.3)",
-                backdropFilter: "blur(8px)",
-                color: "#fff", transition: "all 0.2s",
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.15)"; }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                <circle cx="12" cy="12" r="4"/>
-                <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
-              </svg>
-            </a>
-          </div>
+            {/* Social */}
+            <div style={{ display: "flex", gap: "0.75rem", margin: "0.25rem 0 0.75rem" }}>
+              <SocialBtn href="https://www.facebook.com/share/p/18kWjasgNV/?mibextid=wwXIfr">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                </svg>
+              </SocialBtn>
+              <SocialBtn href="https://www.instagram.com/idoidentity">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5"/>
+                  <circle cx="12" cy="12" r="4"/>
+                  <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+                </svg>
+              </SocialBtn>
+            </div>
 
-          <div
-            className="flex items-center gap-3 px-8 py-3 rounded-full text-sm font-semibold tracking-wider transition-all duration-500"
-            style={{
-              background:
-                hovered === "ido"
-                  ? "rgba(139,92,246,0.9)"
-                  : "rgba(255,255,255,0.15)",
+            {/* CTA */}
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: "0.5rem",
+              padding: "0.75rem 2rem",
+              borderRadius: "100px",
+              fontSize: "clamp(0.75rem, 2vw, 0.875rem)",
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              background: hovered === "ido" ? "rgba(139,92,246,0.9)" : "rgba(255,255,255,0.14)",
               color: "#fff",
               border: "1px solid rgba(255,255,255,0.3)",
               backdropFilter: "blur(12px)",
-              transform: hovered === "ido" ? "translateY(-4px)" : "translateY(0)",
-              boxShadow:
-                hovered === "ido" ? "0 8px 32px rgba(139,92,246,0.5)" : "none",
-            }}
-          >
-            <span>SHOP NOW</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
+              transition: "all 0.4s",
+              transform: hovered === "ido" ? "translateY(-3px)" : "translateY(0)",
+              boxShadow: hovered === "ido" ? "0 8px 28px rgba(139,92,246,0.45)" : "none",
+              whiteSpace: "nowrap",
+            }}>
+              SHOP NOW
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
           </div>
-        </div>
+        </Link>
 
-        {/* Decorative vertical text */}
-        <div
-          className="absolute right-6 bottom-12 text-white/20 text-xs tracking-[0.5em] uppercase hidden sm:block"
-          style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
-        >
-          IDO IDENTITY
-        </div>
-      </Link>
+        {/* Divider — desktop only */}
+        <div style={{
+          width: "2px",
+          background: "rgba(255,255,255,0.14)",
+          display: "none",
+          alignSelf: "stretch",
+        }} className="hero-divider" />
 
-      {/* ─── Divider ─────────────────────────────────────────── */}
-      <div
-        className="relative z-20 hidden sm:flex flex-col items-center justify-center"
-        style={{ width: "2px", background: "rgba(255,255,255,0.15)" }}
-      >
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold"
+        {/* ══ IDEA BY IDO ════════════════════════════════════════ */}
+        <Link
+          href="/ideabyido"
+          id="selector-ideabyido"
+          onMouseEnter={() => setHovered("idea")}
+          onMouseLeave={() => setHovered(null)}
           style={{
-            background: "rgba(255,255,255,0.1)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(255,255,255,0.25)",
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textDecoration: "none",
+            overflow: "hidden",
+            flex: "1 1 300px",
+            minHeight: "55svh",
+            transition: "flex 0.6s cubic-bezier(0.4,0,0.2,1)",
           }}
         >
-          OR
-        </div>
-      </div>
+          {/* BG */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: "url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80')",
+            backgroundSize: "cover", backgroundPosition: "center",
+            transform: hovered === "idea" ? "scale(1.06)" : "scale(1)",
+            transition: "transform 0.7s ease",
+          }} />
+          {/* Overlay */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: hovered === "idea"
+              ? "linear-gradient(135deg,rgba(5,10,20,0.52),rgba(20,60,80,0.42))"
+              : "linear-gradient(135deg,rgba(5,10,20,0.70),rgba(10,30,40,0.62))",
+            transition: "background 0.5s",
+          }} />
 
-      {/* ─── IDEA BY IDO (Right) ──────────────────────────────── */}
-      <Link
-        href="/ideabyido"
-        id="selector-ideabyido"
-        className="relative flex-1 flex flex-col items-center justify-center cursor-pointer overflow-hidden group"
-        onMouseEnter={() => setHovered("idea")}
-        onMouseLeave={() => setHovered(null)}
-        style={{
-          transition: "flex 0.6s cubic-bezier(0.4,0,0.2,1)",
-          flex: hovered === "idea" ? "1.4" : hovered === "ido" ? "0.6" : "1",
-          minHeight: "60svh",
-        }}
-      >
-        {/* Background image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80')",
-          }}
-        />
-        {/* Dark overlay */}
-        <div
-          className="absolute inset-0 transition-all duration-500"
-          style={{
-            background:
-              hovered === "idea"
-                ? "linear-gradient(135deg, rgba(5,10,20,0.55) 0%, rgba(20,60,80,0.45) 100%)"
-                : "linear-gradient(135deg, rgba(5,10,20,0.72) 0%, rgba(10,30,40,0.65) 100%)",
-          }}
-        />
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-6 sm:px-8">
-          {/* Label — UNIFORM FACTORY (ใหญ่ + หนา) */}
-          <p
-            className="font-black tracking-[0.2em] uppercase mb-2 transition-all duration-500"
-            style={{
-              fontSize: "clamp(0.85rem, 3.5vw, 1.5rem)",
+          {/* Content */}
+          <div style={{
+            position: "relative", zIndex: 10,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", textAlign: "center",
+            padding: "clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 3rem)",
+            gap: "0.5rem",
+          }}>
+            {/* UNIFORM FACTORY label */}
+            <p style={{
+              fontSize: "clamp(0.8rem, 2.5vw, 1.1rem)",
+              fontWeight: 900,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
               color: hovered === "idea" ? "#fde68a" : "#fbbf24",
-              textShadow: "0 2px 16px rgba(0,0,0,0.9)",
-            }}
-          >
-            UNIFORM FACTORY
-          </p>
+              textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+              marginBottom: "0.5rem",
+            }}>
+              UNIFORM FACTORY
+            </p>
 
-          <h2
-            className="font-black leading-none mb-3 transition-all duration-500"
-            style={{
-              fontSize: "clamp(2.5rem, 8vw, 6rem)",
+            {/* Heading */}
+            <h2 style={{
+              fontSize: "clamp(3rem, 9vw, 6rem)",
+              fontWeight: 900,
               color: "#ffffff",
-              fontFamily: "'Geist', sans-serif",
+              lineHeight: 1,
               letterSpacing: "-0.02em",
-              textShadow:
-                hovered === "idea"
-                  ? "0 0 60px rgba(201,168,76,0.6)"
-                  : "none",
-            }}
-          >
-            IDEA
-            <br />
-            BY IDO
-          </h2>
+              margin: 0,
+              textShadow: hovered === "idea" ? "0 0 60px rgba(201,168,76,0.6)" : "none",
+              transition: "text-shadow 0.5s",
+            }}>
+              IDEA<br />BY IDO
+            </h2>
 
-          <p
-            className="text-white/70 text-sm sm:text-base mb-4 max-w-xs leading-relaxed transition-all duration-500"
-            style={{ opacity: hovered === "idea" ? 1 : 0.7 }}
-          >
-            รับผลิตยูนิฟอร์ม — ครบทุกประเภท มืออาชีพระดับโรงงาน
-          </p>
+            {/* Sub */}
+            <p style={{
+              color: "rgba(255,255,255,0.72)",
+              fontSize: "clamp(0.8rem, 2vw, 1rem)",
+              lineHeight: 1.7,
+              margin: "0.75rem 0",
+              maxWidth: "26ch",
+            }}>
+              รับผลิตยูนิฟอร์ม — ครบทุกประเภท มืออาชีพระดับโรงงาน
+            </p>
 
-          <div
-            className="flex items-center gap-3 px-8 py-3 rounded-full text-sm font-semibold tracking-wider transition-all duration-500"
-            style={{
-              background:
-                hovered === "idea"
-                  ? "rgba(201,168,76,0.9)"
-                  : "rgba(255,255,255,0.15)",
+            {/* CTA */}
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: "0.5rem",
+              padding: "0.75rem 2rem",
+              borderRadius: "100px",
+              fontSize: "clamp(0.75rem, 2vw, 0.875rem)",
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              background: hovered === "idea" ? "rgba(201,168,76,0.9)" : "rgba(255,255,255,0.14)",
               color: hovered === "idea" ? "#0a0f1e" : "#fff",
               border: "1px solid rgba(255,255,255,0.3)",
               backdropFilter: "blur(12px)",
-              transform: hovered === "idea" ? "translateY(-4px)" : "translateY(0)",
-              boxShadow:
-                hovered === "idea"
-                  ? "0 8px 32px rgba(201,168,76,0.5)"
-                  : "none",
-            }}
-          >
-            <span>OUR PORTFOLIO</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
+              transition: "all 0.4s",
+              transform: hovered === "idea" ? "translateY(-3px)" : "translateY(0)",
+              boxShadow: hovered === "idea" ? "0 8px 28px rgba(201,168,76,0.45)" : "none",
+              whiteSpace: "nowrap",
+            }}>
+              OUR PORTFOLIO
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
           </div>
-        </div>
+        </Link>
+      </div>
 
-        {/* Decorative vertical text */}
-        <div
-          className="absolute left-6 bottom-12 text-white/20 text-xs tracking-[0.5em] uppercase hidden sm:block"
-          style={{ writingMode: "vertical-rl" }}
-        >
-          IDEA BY IDO
-        </div>
-      </Link>
-
-      {/* Mobile divider */}
-      <div className="sm:hidden w-full h-px bg-white/20" />
+      {/* Desktop divider via CSS */}
+      <style>{`
+        @media (min-width: 640px) {
+          .hero-divider { display: flex !important; }
+          #selector-ido-identity { min-height: 100svh !important; }
+          #selector-ideabyido { min-height: 100svh !important; }
+        }
+      `}</style>
     </section>
   );
 }
