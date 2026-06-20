@@ -2,6 +2,26 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+// ── Multi-color letters helper ──────────────────────────────
+const FASHION_COLORS = ["#f59e0b", "#ef4444", "#22c55e", "#f97316", "#3b82f6", "#ec4899", "#8b5cf6"];
+const LIFESTYLE_COLORS = ["#06b6d4", "#84cc16", "#f43f5e", "#a855f7", "#14b8a6", "#fb923c", "#6366f1", "#10b981", "#eab308"];
+
+function ColorfulText({ text, colors }: { text: string; colors: string[] }) {
+  return (
+    <>
+      {text.split("").map((char, i) =>
+        char === " " ? (
+          <span key={i}>&nbsp;</span>
+        ) : (
+          <span key={i} style={{ color: colors[i % colors.length], display: "inline-block" }}>
+            {char}
+          </span>
+        )
+      )}
+    </>
+  );
+}
+
 export default function Hero_section() {
   const [visible, setVisible] = useState(false);
   const [hovered, setHovered] = useState<"ido" | "idea" | null>(null);
@@ -33,10 +53,7 @@ export default function Hero_section() {
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-          style={{
-            backgroundImage:
-              "url('/hero-ido.jpg')",
-          }}
+          style={{ backgroundImage: "url('/hero-ido.jpg')" }}
         />
         {/* Dark overlay */}
         <div
@@ -50,23 +67,24 @@ export default function Hero_section() {
         />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-8">
-          {/* Label */}
+        <div className="relative z-10 flex flex-col items-center text-center px-6 sm:px-8">
+          {/* Label — แฟชั่น & ไลฟ์สไตล์ (multi-color, always visible) */}
           <p
-            className="text-lg sm:text-xl font-semibold tracking-[0.25em] uppercase mb-4 transition-all duration-500"
+            className="font-black tracking-[0.15em] uppercase mb-3 transition-all duration-500"
             style={{
-              color: hovered === "ido" ? "#e9d5ff" : "#c4b5fd",
-              letterSpacing: "0.25em",
-              textShadow: "0 2px 12px rgba(0,0,0,0.8)",
+              fontSize: "clamp(1rem, 3.5vw, 1.5rem)",
+              textShadow: "0 2px 16px rgba(0,0,0,0.9)",
+              lineHeight: 1.3,
+              whiteSpace: "nowrap",
             }}
           >
-            FASHION &amp; LIFESTYLE
+            <ColorfulText text="แฟชั่น & ไลฟ์สไตล์" colors={FASHION_COLORS} />
           </p>
 
           <h2
             className="font-black leading-none mb-6 transition-all duration-500"
             style={{
-              fontSize: "clamp(2.5rem, 7vw, 6rem)",
+              fontSize: "clamp(3rem, 8vw, 6rem)",
               color: "#ffffff",
               fontFamily: "'Geist', sans-serif",
               letterSpacing: "-0.02em",
@@ -87,6 +105,52 @@ export default function Hero_section() {
           >
             เสื้อผ้าแฟชั่น — สะท้อนตัวตนที่แท้จริงของคุณ
           </p>
+
+          {/* Social links */}
+          <div className="flex items-center gap-3 mb-5">
+            <a
+              href="https://www.facebook.com/share/p/18kWjasgNV/?mibextid=wwXIfr"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                width: 36, height: 36, borderRadius: "50%",
+                background: "rgba(255,255,255,0.15)",
+                border: "1px solid rgba(255,255,255,0.3)",
+                backdropFilter: "blur(8px)",
+                color: "#fff", transition: "all 0.2s",
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "#1877f2"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.15)"; }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+              </svg>
+            </a>
+            <a
+              href="https://www.instagram.com/idoidentity"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                width: 36, height: 36, borderRadius: "50%",
+                background: "rgba(255,255,255,0.15)",
+                border: "1px solid rgba(255,255,255,0.3)",
+                backdropFilter: "blur(8px)",
+                color: "#fff", transition: "all 0.2s",
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.15)"; }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+              </svg>
+            </a>
+          </div>
 
           <div
             className="flex items-center gap-3 px-8 py-3 rounded-full text-sm font-semibold tracking-wider transition-all duration-500"
@@ -168,13 +232,14 @@ export default function Hero_section() {
         />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-8">
-          {/* Label */}
+        <div className="relative z-10 flex flex-col items-center text-center px-6 sm:px-8">
+          {/* Label — UNIFORM FACTORY (ใหญ่ + หนา) */}
           <p
-            className="text-lg sm:text-xl font-semibold tracking-[0.25em] uppercase mb-4 transition-all duration-500"
+            className="font-black tracking-[0.2em] uppercase mb-3 transition-all duration-500"
             style={{
+              fontSize: "clamp(1rem, 3.5vw, 1.5rem)",
               color: hovered === "idea" ? "#fde68a" : "#fbbf24",
-              textShadow: "0 2px 12px rgba(0,0,0,0.8)",
+              textShadow: "0 2px 16px rgba(0,0,0,0.9)",
             }}
           >
             UNIFORM FACTORY
@@ -183,7 +248,7 @@ export default function Hero_section() {
           <h2
             className="font-black leading-none mb-6 transition-all duration-500"
             style={{
-              fontSize: "clamp(2.5rem, 7vw, 6rem)",
+              fontSize: "clamp(3rem, 8vw, 6rem)",
               color: "#ffffff",
               fontFamily: "'Geist', sans-serif",
               letterSpacing: "-0.02em",
