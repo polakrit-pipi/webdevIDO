@@ -36,7 +36,7 @@ export default function Hero_section() {
       className={`w-full flex flex-col sm:flex-row relative overflow-hidden transition-opacity duration-700 ${
         visible ? "opacity-100" : "opacity-0"
       }`}
-      style={{ height: "calc(100vh - 64px)", minHeight: "500px" }}
+      style={{ minHeight: "100svh" }}
     >
       {/* ─── IDO IDENTITY (Left) ─────────────────────────────── */}
       <Link
@@ -48,6 +48,7 @@ export default function Hero_section() {
         style={{
           transition: "flex 0.6s cubic-bezier(0.4,0,0.2,1)",
           flex: hovered === "ido" ? "1.4" : hovered === "idea" ? "0.6" : "1",
+          minHeight: "60svh",
         }}
       >
         {/* Background image */}
@@ -70,9 +71,9 @@ export default function Hero_section() {
         <div className="relative z-10 flex flex-col items-center text-center px-6 sm:px-8">
           {/* Label — แฟชั่น & ไลฟ์สไตล์ (multi-color, always visible) */}
           <p
-            className="font-black tracking-[0.15em] uppercase mb-3 transition-all duration-500"
+            className="font-black tracking-[0.15em] uppercase mb-2 transition-all duration-500"
             style={{
-              fontSize: "clamp(1rem, 3.5vw, 1.5rem)",
+              fontSize: "clamp(0.85rem, 3.5vw, 1.5rem)",
               textShadow: "0 2px 16px rgba(0,0,0,0.9)",
               lineHeight: 1.3,
               whiteSpace: "nowrap",
@@ -100,14 +101,14 @@ export default function Hero_section() {
           </h2>
 
           <p
-            className="text-white/70 text-sm sm:text-base mb-8 max-w-xs leading-relaxed transition-all duration-500"
+            className="text-white/70 text-sm sm:text-base mb-3 max-w-xs leading-relaxed transition-all duration-500"
             style={{ opacity: hovered === "ido" ? 1 : 0.7 }}
           >
             เสื้อผ้าแฟชั่น — สะท้อนตัวตนที่แท้จริงของคุณ
           </p>
 
           {/* Social links */}
-          <div className="flex items-center gap-3 mb-5">
+          <div className="flex items-center gap-3 mb-4">
             <a
               href="https://www.facebook.com/share/p/18kWjasgNV/?mibextid=wwXIfr"
               target="_blank"
@@ -210,6 +211,7 @@ export default function Hero_section() {
         style={{
           transition: "flex 0.6s cubic-bezier(0.4,0,0.2,1)",
           flex: hovered === "idea" ? "1.4" : hovered === "ido" ? "0.6" : "1",
+          minHeight: "60svh",
         }}
       >
         {/* Background image */}
@@ -235,9 +237,9 @@ export default function Hero_section() {
         <div className="relative z-10 flex flex-col items-center text-center px-6 sm:px-8">
           {/* Label — UNIFORM FACTORY (ใหญ่ + หนา) */}
           <p
-            className="font-black tracking-[0.2em] uppercase mb-3 transition-all duration-500"
+            className="font-black tracking-[0.2em] uppercase mb-2 transition-all duration-500"
             style={{
-              fontSize: "clamp(1rem, 3.5vw, 1.5rem)",
+              fontSize: "clamp(0.85rem, 3.5vw, 1.5rem)",
               color: hovered === "idea" ? "#fde68a" : "#fbbf24",
               textShadow: "0 2px 16px rgba(0,0,0,0.9)",
             }}
@@ -246,9 +248,9 @@ export default function Hero_section() {
           </p>
 
           <h2
-            className="font-black leading-none mb-6 transition-all duration-500"
+            className="font-black leading-none mb-3 transition-all duration-500"
             style={{
-              fontSize: "clamp(3rem, 8vw, 6rem)",
+              fontSize: "clamp(2.5rem, 8vw, 6rem)",
               color: "#ffffff",
               fontFamily: "'Geist', sans-serif",
               letterSpacing: "-0.02em",
@@ -264,7 +266,7 @@ export default function Hero_section() {
           </h2>
 
           <p
-            className="text-white/70 text-sm sm:text-base mb-8 max-w-xs leading-relaxed transition-all duration-500"
+            className="text-white/70 text-sm sm:text-base mb-4 max-w-xs leading-relaxed transition-all duration-500"
             style={{ opacity: hovered === "idea" ? 1 : 0.7 }}
           >
             รับผลิตยูนิฟอร์ม — ครบทุกประเภท มืออาชีพระดับโรงงาน
