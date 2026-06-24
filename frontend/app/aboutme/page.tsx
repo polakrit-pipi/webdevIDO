@@ -17,7 +17,7 @@ export default function AboutPage() {
           fill
           sizes="100vw"
           className="object-cover"
-          unoptimized
+          priority
         />
       </section>
 
@@ -56,7 +56,7 @@ export default function AboutPage() {
             fill
             sizes="(min-width: 768px) 50vw, 100vw"
             className="object-cover rounded-md"
-            unoptimized
+            loading="lazy"
           />
         </div>
       </section>
@@ -70,7 +70,7 @@ export default function AboutPage() {
             fill
             sizes="(min-width: 768px) 50vw, 100vw"
             className="object-cover rounded-md"
-            unoptimized
+            loading="lazy"
           />
         </div>
         <div className="max-w-[34rem] order-1 md:order-2">

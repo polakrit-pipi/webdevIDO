@@ -275,7 +275,7 @@ export default function CheckoutPage() {
                   return (
                     <div key={`${item.id}-${item.sku}`} className="flex gap-3 items-center">
                       <div className="relative w-12 h-14 bg-gray-50 rounded overflow-hidden shrink-0">
-                        <Image src={imgUrl} alt={item.product?.ProductName || ''} fill className="object-cover" unoptimized />
+                        <Image src={imgUrl} alt={item.product?.ProductName || ''} fill className="object-cover" sizes="48px" loading="lazy" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-800 truncate">{item.product?.ProductName}</p>

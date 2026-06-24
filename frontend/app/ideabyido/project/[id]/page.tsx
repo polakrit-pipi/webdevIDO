@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 interface UniformProject {
   id: number;
@@ -159,15 +160,17 @@ export default function ProjectDetailPage() {
                 border: "1px solid rgba(255,255,255,0.07)",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "16px",
+                position: "relative",
               }}
             >
               {allImages[activeImg] ? (
-                <img
+                <Image
                   src={allImages[activeImg]}
                   alt={project.title}
-                  style={{ width: "100%", height: "100%", objectFit: "contain", background: "#0a0f1e" }}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  style={{ objectFit: "contain", background: "#0a0f1e" }}
+                  priority
                 />
               ) : (
                 <span style={{ fontSize: "5rem", opacity: 0.3 }}>🏭</span>
@@ -191,9 +194,10 @@ export default function ProjectDetailPage() {
                       cursor: "pointer",
                       transition: "border-color 0.2s",
                       background: "transparent",
+                      position: "relative",
                     }}
                   >
-                    <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <Image src={img} alt="" fill sizes="72px" style={{ objectFit: "cover" }} loading="lazy" />
                   </button>
                 ))}
               </div>

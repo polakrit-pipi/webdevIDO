@@ -20,10 +20,12 @@ export default function ProductGallery({ images = [] }: { images: string[] }) {
                     >
                         <Image
                             src={url}
-                            width={500}
-                            height={500}
+                            width={200}
+                            height={200}
                             alt="Thumbnail"
                             className="w-full h-auto"
+                            sizes="8vw"
+                            loading="lazy"
                         />
                     </div>
                 ))}
@@ -32,10 +34,12 @@ export default function ProductGallery({ images = [] }: { images: string[] }) {
                <div className="w-[30vw]">
                     <Image 
                         src={selectedImg || '/placeholder.png'} 
-                        width={500}    
-                        height={500}     
+                        width={800}    
+                        height={800}     
                         alt="Shirt Preview" 
-                        className="w-full h-auto" 
+                        className="w-full h-auto"
+                        sizes="30vw"
+                        priority
                     />
                 </div> 
             </div>

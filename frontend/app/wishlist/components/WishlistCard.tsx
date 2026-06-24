@@ -23,7 +23,7 @@ export default function WishlistCard({ item, isAddingToCart, onRemove, onAddToCa
     <div className="group relative border border-gray-100 rounded-lg p-4 hover:shadow-lg transition-shadow bg-white">
       <button onClick={() => onRemove(item.documentId)} className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors z-10">✕</button>
       <Link href={`/product/${product.documentId}`} className="block relative aspect-3/4 mb-4 overflow-hidden rounded bg-gray-50">
-        <Image src={imageUrl} alt={productName} fill unoptimized className="object-cover group-hover:scale-105 transition-transform duration-500" />
+        <Image src={imageUrl} alt={productName} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
       </Link>
       <div className="text-center">
         <Link href={`/product/${product.slug || product.documentId}`}>

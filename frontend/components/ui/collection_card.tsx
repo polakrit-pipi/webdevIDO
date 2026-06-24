@@ -10,9 +10,10 @@ export default function Collection_Card({ imageUrl = '/placeholder.png' }: Colle
       <Image
         src={imageUrl}
         fill
-        unoptimized
         alt="collection"
         className="object-cover"
+        sizes="(max-width: 768px) 100vw, 33vw"
+        loading="lazy"
         onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.png'; }}
       />
     </div>

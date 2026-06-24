@@ -45,7 +45,14 @@ export default function ProductCard({ product, isWishlisted, onToggleWishlist }:
         </button>
 
         {imageObj?.url ? (
-          <Image src={imgUrl} alt={product.ProductName} fill unoptimized className="object-cover group-hover:scale-105 transition-transform" />
+          <Image
+            src={imgUrl}
+            alt={product.ProductName}
+            fill
+            sizes="(max-width: 768px) 50vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform"
+            loading="lazy"
+          />
         ) : (
           <div className="flex items-center justify-center h-full text-gray-300 text-xs bg-gray-50 border border-gray-100">NO IMAGE</div>
         )}

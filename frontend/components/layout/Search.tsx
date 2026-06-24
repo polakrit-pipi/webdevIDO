@@ -267,7 +267,8 @@ export default function Search({ isScrolled }: SearchProps) {
                           alt={p.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform"
-                          unoptimized
+                          sizes="(max-width: 768px) 25vw, 15vw"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-300 text-[0.7vw]">

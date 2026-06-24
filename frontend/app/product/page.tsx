@@ -24,7 +24,7 @@ function ProductContent() {
     <div className="mt-[7vw] min-h-screen bg-white font-sans text-[#333]">
       <Navbar />
       <div className="relative w-full h-75 md:h-100 bg-gray-800 flex items-center justify-center overflow-hidden">
-         {store.bannerUrl && <Image src={store.bannerUrl} alt="Banner" fill className="object-cover" unoptimized />}
+         {store.bannerUrl && <Image src={store.bannerUrl} alt="Banner" fill className="object-cover" sizes="100vw" priority />}
         <div className="absolute inset-0 bg-black/40 z-10"></div>
         <h1 className="relative z-20 text-white text-3xl md:text-5xl font-bold uppercase tracking-widest text-center px-4">{getPageTitle()}</h1>
       </div>

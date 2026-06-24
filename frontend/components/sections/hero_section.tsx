@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 // ── Multi-color letters ──────────────────────────────────────
 const COLORS = ["#f59e0b","#ef4444","#22c55e","#3b82f6","#ec4899","#8b5cf6","#06b6d4","#f97316","#84cc16"];
@@ -85,14 +86,22 @@ export default function Hero_section() {
             transition: "flex 0.6s cubic-bezier(0.4,0,0.2,1)",
           }}
         >
-          {/* BG */}
+          {/* BG — using Next.js Image for priority preload */}
           <div style={{
             position: "absolute", inset: 0,
-            backgroundImage: "url('/hero-ido.jpg')",
-            backgroundSize: "cover", backgroundPosition: "center",
             transform: hovered === "ido" ? "scale(1.06)" : "scale(1)",
             transition: "transform 0.7s ease",
-          }} />
+            overflow: "hidden",
+          }}>
+            <Image
+              src="/hero-ido.jpg"
+              alt="IDO Identity background"
+              fill
+              priority
+              sizes="50vw"
+              style={{ objectFit: "cover", objectPosition: "center" }}
+            />
+          </div>
           {/* Overlay */}
           <div style={{
             position: "absolute", inset: 0,
@@ -216,14 +225,22 @@ export default function Hero_section() {
             transition: "flex 0.6s cubic-bezier(0.4,0,0.2,1)",
           }}
         >
-          {/* BG */}
+          {/* BG — using Next.js Image for priority preload */}
           <div style={{
             position: "absolute", inset: 0,
-            backgroundImage: "url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80')",
-            backgroundSize: "cover", backgroundPosition: "center",
             transform: hovered === "idea" ? "scale(1.06)" : "scale(1)",
             transition: "transform 0.7s ease",
-          }} />
+            overflow: "hidden",
+          }}>
+            <Image
+              src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80"
+              alt="Idea by IDO background"
+              fill
+              priority
+              sizes="50vw"
+              style={{ objectFit: "cover", objectPosition: "center" }}
+            />
+          </div>
           {/* Overlay */}
           <div style={{
             position: "absolute", inset: 0,

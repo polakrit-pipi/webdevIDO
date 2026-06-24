@@ -203,7 +203,7 @@ export default function IdeaByIdoPage() {
             alt="ทีมงาน ไอเดียบายไอดู"
             fill
             style={{ objectFit: "cover", objectPosition: "center top", filter: "brightness(0.35) saturate(1.2)" }}
-            unoptimized
+            sizes="100vw"
             priority
           />
         </div>
@@ -292,7 +292,7 @@ export default function IdeaByIdoPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
               {FACTORY_IMAGES.slice(0, 4).map((img, i) => (
                 <div key={i} style={{ borderRadius: "12px", overflow: "hidden", aspectRatio: "4/3", position: "relative", border: "1px solid rgba(255,255,255,0.07)" }}>
-                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover" }} unoptimized />
+                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" />
                   <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.65))", padding: "8px", fontSize: "11px", color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{img.label}</div>
                 </div>
               ))}
@@ -361,7 +361,7 @@ export default function IdeaByIdoPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
               {GALLERY_IMAGES.map((img, i) => (
                 <div key={i} style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: i === 0 ? "16/9" : "4/3", border: "1px solid rgba(255,255,255,0.07)", gridColumn: i === 0 ? "span 2" : "span 1" }}>
-                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} unoptimized
+                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} sizes="(max-width: 768px) 100vw, 33vw" loading="lazy"
                     onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
                     onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   />
@@ -378,7 +378,7 @@ export default function IdeaByIdoPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
               {FACTORY_IMAGES.map((img, i) => (
                 <div key={i} style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: "4/3", border: "1px solid rgba(255,255,255,0.07)" }}>
-                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} unoptimized
+                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} sizes="(max-width: 768px) 100vw, 33vw" loading="lazy"
                     onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
                     onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   />
@@ -394,7 +394,7 @@ export default function IdeaByIdoPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
               {PRODUCTION_IMAGES.map((img, i) => (
                 <div key={i} style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: "4/3", border: "1px solid rgba(255,255,255,0.07)" }}>
-                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} unoptimized
+                  <Image src={img.src} alt={img.alt} fill style={{ objectFit: "cover", transition: "transform 0.4s" }} sizes="(max-width: 768px) 100vw, 33vw" loading="lazy"
                     onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
                     onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   />
@@ -490,16 +490,16 @@ export default function IdeaByIdoPage() {
           {/* Production photo showcase */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
             <div style={{ borderRadius: "14px", overflow: "hidden", gridColumn: "span 2", position: "relative", aspectRatio: "16/9", border: "1px solid rgba(255,255,255,0.07)" }}>
-              <Image src="/ideabyido/img_p5_1_621x465.jpeg" alt="เครื่องจักรปักอัตโนมัติ" fill style={{ objectFit: "cover" }} unoptimized />
+              <Image src="/ideabyido/img_p5_1_621x465.jpeg" alt="เครื่องจักรปักอัตโนมัติ" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 100vw, 50vw" loading="lazy" />
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.7))", padding: "12px" }}>
                 <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "12px", fontWeight: 500 }}>เครื่องปักอัตโนมัติสำหรับงานปักโลโก้</div>
               </div>
             </div>
             <div style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: "4/3", border: "1px solid rgba(255,255,255,0.07)" }}>
-              <Image src="/ideabyido/img_p6_1_317x238.jpeg" alt="การตัดเย็บผ้า" fill style={{ objectFit: "cover" }} unoptimized />
+              <Image src="/ideabyido/img_p6_1_317x238.jpeg" alt="การตัดเย็บผ้า" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" />
             </div>
             <div style={{ borderRadius: "14px", overflow: "hidden", position: "relative", aspectRatio: "4/3", border: "1px solid rgba(255,255,255,0.07)" }}>
-              <Image src="/ideabyido/img_p5_9_534x400.jpeg" alt="เครื่องสกรีน" fill style={{ objectFit: "cover" }} unoptimized />
+              <Image src="/ideabyido/img_p5_9_534x400.jpeg" alt="เครื่องสกรีน" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" />
             </div>
           </div>
         </div>

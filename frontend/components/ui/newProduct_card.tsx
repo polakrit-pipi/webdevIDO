@@ -11,7 +11,7 @@ export default function NewProductCard({ name, description, imageUrl }: NewProdu
     return (
         <div className="flex flex-col items-center h-full w-full">
             <div className="relative w-full h-[20vw] bg-white rounded-lg overflow-hidden mb-[1.5vw]">
-                <Image src={imageUrl} alt={name} fill unoptimized className="object-contain"/>
+                <Image src={imageUrl} alt={name} fill className="object-contain" sizes="(max-width: 768px) 100vw, 25vw" loading="lazy" />
             </div>
             <h3 className="text-[1.8vw] font-bold mt-[1vw]">{name}</h3>
             <p className="text-[1vw] mb-[1vw]">{description}</p>

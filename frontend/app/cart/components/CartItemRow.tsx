@@ -34,7 +34,7 @@ export default function CartItemRow({ item, isUpdating, onUpdateQty, onRemove }:
   return (
     <div className="flex gap-4 border-b border-gray-100 pb-6">
       <div className="relative w-24 h-32 bg-gray-50 rounded overflow-hidden shrink-0">
-        <Image src={imageUrl} alt={product.ProductName} fill className="object-cover" unoptimized />
+        <Image src={imageUrl} alt={product.ProductName} fill className="object-cover" sizes="96px" loading="lazy" />
       </div>
       <div className="flex-1">
         <div className="flex justify-between items-start">
