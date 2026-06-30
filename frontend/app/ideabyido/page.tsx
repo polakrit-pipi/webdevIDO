@@ -523,7 +523,7 @@ export default function IdeaByIdoPage() {
           </div>
 
           {/* Contact Cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", marginBottom: "2.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "16px", marginBottom: "2.5rem" }}>
             {[
               { icon: <LineIcon />, label: "Line Official", value: "@ideabyido", href: "https://line.me/ti/p/ideabyido" },
               { icon: <PhoneIcon />, label: "โทรศัพท์ (เก๋)", value: "064-424-1519", href: "tel:0644241519" },
