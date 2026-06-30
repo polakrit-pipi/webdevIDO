@@ -102,9 +102,8 @@ export default function Footer() {
               id={statusId}
               role="status"
               aria-live="polite"
-              className={`text-sm md:text-[0.85vw] mt-1 min-h-[1.25rem] ${
-                status === "error" ? "text-red-700" : status === "success" ? "text-[#3d2f5c]" : "text-transparent"
-              }`}
+              className={`text-sm md:text-[0.85vw] mt-1 min-h-[1.25rem] ${status === "error" ? "text-red-700" : status === "success" ? "text-[#3d2f5c]" : "text-transparent"
+                }`}
             >
               {status === "error" ? errorMsg : status === "success" ? t("footer.alertSuccess") : "."}
             </p>
@@ -137,14 +136,20 @@ export default function Footer() {
           <div>
             <p className="font-bold mb-2">{t("footer.followUs")}</p>
             <ul className="flex gap-4">
-              {(["instagram", "facebook", "line"] as const).map((s) => (
-                <li key={s}>
+              {([
+                { key: "instagram", href: "https://www.instagram.com/idoidentity" },
+                { key: "facebook", href: "https://www.facebook.com/ideabyido" },
+                { key: "line", href: "https://line.me/ti/p/@ideabyido" },
+              ] as const).map(({ key, href }) => (
+                <li key={key}>
                   <a
-                    href="#"
-                    aria-label={s.charAt(0).toUpperCase() + s.slice(1)}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={key.charAt(0).toUpperCase() + key.slice(1)}
                     className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] hover:opacity-70 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded-sm"
                   >
-                    <Image src={`/${s}-icon.png`} width={24} height={24} alt="" aria-hidden="true" />
+                    <Image src={`/${key}-icon.png`} width={24} height={24} alt="" aria-hidden="true" />
                   </a>
                 </li>
               ))}
