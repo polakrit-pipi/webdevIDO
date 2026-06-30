@@ -78,11 +78,11 @@ const ServiceIcons: Record<string, React.ReactNode> = {
 // ─── Services Data ───────────────────────────────────────
 const SERVICES = [
   { category: "Corporate", title: "ยูนิฟอร์มสำนักงาน", desc: "ออกแบบและผลิตชุดทำงานสำหรับองค์กร สวมใส่สบาย ดูดีเป็นมืออาชีพ" },
-  { category: "School",    title: "เสื้อโรงเรียน",     desc: "ชุดนักเรียนทุกระดับ ผ้าคุณภาพ ทนทาน ราคาเหมาะสม" },
-  { category: "Hotel",     title: "ยูนิฟอร์มโรงแรม",  desc: "ชุดพนักงานโรงแรม ดีไซน์หรูหรา เน้นความสะอาดเรียบร้อย" },
-  { category: "Sport",     title: "ชุดกีฬา",           desc: "เสื้อกีฬาทีม ผ้าระบายอากาศ พิมพ์ชื่อ-หมายเลขได้" },
-  { category: "Restaurant",title: "ชุดร้านอาหาร",     desc: "ยูนิฟอร์มร้านอาหาร ครัว บาริสต้า ออกแบบตามแบรนด์" },
-  { category: "Medical",   title: "ชุดการแพทย์",      desc: "Scrubs, ชุดพยาบาล, ชุดผู้ช่วย ผ้าต้านเชื้อโรค" },
+  { category: "School", title: "เสื้อโรงเรียน", desc: "ชุดนักเรียนทุกระดับ ผ้าคุณภาพ ทนทาน ราคาเหมาะสม" },
+  { category: "Hotel", title: "ยูนิฟอร์มโรงแรม", desc: "ชุดพนักงานโรงแรม ดีไซน์หรูหรา เน้นความสะอาดเรียบร้อย" },
+  { category: "Sport", title: "ชุดกีฬา", desc: "เสื้อกีฬาทีม ผ้าระบายอากาศ พิมพ์ชื่อ-หมายเลขได้" },
+  { category: "Restaurant", title: "ชุดร้านอาหาร", desc: "ยูนิฟอร์มร้านอาหาร ครัว บาริสต้า ออกแบบตามแบรนด์" },
+  { category: "Medical", title: "ชุดการแพทย์", desc: "Scrubs, ชุดพยาบาล, ชุดผู้ช่วย ผ้าต้านเชื้อโรค" },
 ];
 
 // ─── Contact icons (SVG) ─────────────────────────────────
@@ -107,8 +107,8 @@ const MailIcon = () => (
 
 const MapIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-    <circle cx="12" cy="10" r="3"/>
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+    <circle cx="12" cy="10" r="3" />
   </svg>
 );
 
@@ -123,28 +123,28 @@ const PROCESS = [
 
 // ─── Gallery images from company profile ─────────────────
 const GALLERY_IMAGES = [
-  { src: "/ideabyido/img_p4_63_1280x853.png",  alt: "ผลงาน DPU RUN 2025 - เสื้อกีฬากิจกรรม",        label: "Sport Event" },
-  { src: "/ideabyido/img_p4_64_1477x1108.png", alt: "ผลงานยูนิฟอร์มลูกค้า",                          label: "Corporate" },
-  { src: "/ideabyido/img_p4_65_1290x844.png",  alt: "งานผลิตจริง ผลงานที่ไว้วางใจ",                  label: "Event" },
-  { src: "/ideabyido/img_p4_66_1290x857.png",  alt: "งานผลิต ชุดยูนิฟอร์มหลากสี",                   label: "Uniform" },
-  { src: "/ideabyido/img_p4_67_1246x1312.png", alt: "ผลงานยูนิฟอร์มสถาบันการศึกษา",                 label: "School" },
+  { src: "/ideabyido/img_p4_63_1280x853.png", alt: "ผลงาน DPU RUN 2025 - เสื้อกีฬากิจกรรม", label: "Sport Event" },
+  { src: "/ideabyido/img_p4_64_1477x1108.png", alt: "ผลงานยูนิฟอร์มลูกค้า", label: "Corporate" },
+  { src: "/ideabyido/img_p4_65_1290x844.png", alt: "งานผลิตจริง ผลงานที่ไว้วางใจ", label: "Event" },
+  { src: "/ideabyido/img_p4_66_1290x857.png", alt: "งานผลิต ชุดยูนิฟอร์มหลากสี", label: "Uniform" },
+  { src: "/ideabyido/img_p4_67_1246x1312.png", alt: "ผลงานยูนิฟอร์มสถาบันการศึกษา", label: "School" },
 ];
 
 const FACTORY_IMAGES = [
-  { src: "/ideabyido/img_p2_1_363x272.jpeg",   alt: "ป้ายบริษัท ไอเดียบายไอดู",         label: "สำนักงาน" },
-  { src: "/ideabyido/img_p2_2_363x272.jpeg",   alt: "หน้าโรงงาน ไอเดียบายไอดู",         label: "โรงงาน" },
-  { src: "/ideabyido/img_p2_3_351x273.jpeg",   alt: "ทีมงาน ไอเดียบายไอดู",             label: "ทีมงาน" },
-  { src: "/ideabyido/img_p2_4_365x274.jpeg",   alt: "โรงงานยามค่ำคืน ไอเดียบายไอดู",   label: "โรงงาน" },
-  { src: "/ideabyido/img_p2_5_363x272.jpeg",   alt: "สายการผลิต ไอเดียบายไอดู",        label: "การผลิต" },
+  { src: "/ideabyido/img_p2_1_363x272.jpeg", alt: "ป้ายบริษัท ไอเดียบายไอดู", label: "สำนักงาน" },
+  { src: "/ideabyido/img_p2_2_363x272.jpeg", alt: "หน้าโรงงาน ไอเดียบายไอดู", label: "โรงงาน" },
+  { src: "/ideabyido/img_p2_3_351x273.jpeg", alt: "ทีมงาน ไอเดียบายไอดู", label: "ทีมงาน" },
+  { src: "/ideabyido/img_p2_4_365x274.jpeg", alt: "โรงงานยามค่ำคืน ไอเดียบายไอดู", label: "โรงงาน" },
+  { src: "/ideabyido/img_p2_5_363x272.jpeg", alt: "สายการผลิต ไอเดียบายไอดู", label: "การผลิต" },
 ];
 
 const PRODUCTION_IMAGES = [
-  { src: "/ideabyido/img_p5_1_621x465.jpeg",   alt: "เครื่องจักรปักอัตโนมัติ",          label: "งานปัก" },
-  { src: "/ideabyido/img_p6_1_317x238.jpeg",   alt: "การตัดเย็บผ้า",                    label: "การผลิต" },
-  { src: "/ideabyido/img_p6_2_317x237.jpeg",   alt: "ห้องตัดเย็บ",                      label: "การผลิต" },
-  { src: "/ideabyido/img_p5_9_534x400.jpeg",   alt: "เครื่องสกรีน",                     label: "งานสกรีน" },
-  { src: "/ideabyido/img_p6_15_593x333.jpeg",  alt: "คลังสินค้า",                       label: "จัดส่ง" },
-  { src: "/ideabyido/img_p6_17_593x333.jpeg",  alt: "บรรจุภัณฑ์พร้อมส่ง",              label: "จัดส่ง" },
+  { src: "/ideabyido/img_p5_1_621x465.jpeg", alt: "เครื่องจักรปักอัตโนมัติ", label: "งานปัก" },
+  { src: "/ideabyido/img_p6_1_317x238.jpeg", alt: "การตัดเย็บผ้า", label: "การผลิต" },
+  { src: "/ideabyido/img_p6_2_317x237.jpeg", alt: "ห้องตัดเย็บ", label: "การผลิต" },
+  { src: "/ideabyido/img_p5_9_534x400.jpeg", alt: "เครื่องสกรีน", label: "งานสกรีน" },
+  { src: "/ideabyido/img_p6_15_593x333.jpeg", alt: "คลังสินค้า", label: "จัดส่ง" },
+  { src: "/ideabyido/img_p6_17_593x333.jpeg", alt: "บรรจุภัณฑ์พร้อมส่ง", label: "จัดส่ง" },
 ];
 
 // ─── No-image placeholder SVG ───────────────────────────
@@ -246,9 +246,9 @@ export default function IdeaByIdoPage() {
           {/* Stats from profile */}
           <div style={{ display: "flex", gap: "3rem", marginTop: "4rem", flexWrap: "wrap" }}>
             {[
-              { value: "15+",  label: "ปีประสบการณ์ (ก่อตั้ง 2554)" },
+              { value: "15+", label: "ปีประสบการณ์ (ก่อตั้ง 2554)" },
               { value: "500+", label: "โปรเจกต์ที่ผ่านมา" },
-              { value: "50+",  label: "บริษัทที่ไว้วางใจ" },
+              { value: "50+", label: "บริษัทที่ไว้วางใจ" },
             ].map((stat) => (
               <div key={stat.label}>
                 <div style={{ fontSize: "2rem", fontWeight: 800, background: "linear-gradient(135deg, #c9a84c, #f0d080)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", lineHeight: 1 }}>{stat.value}</div>
@@ -342,8 +342,8 @@ export default function IdeaByIdoPage() {
           {/* Tab switcher */}
           <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "2.5rem", flexWrap: "wrap" }}>
             {([
-              { key: "clients",    label: "ผลงานลูกค้า" },
-              { key: "factory",    label: "โรงงานของเรา" },
+              { key: "clients", label: "ผลงานลูกค้า" },
+              { key: "factory", label: "โรงงานของเรา" },
               { key: "production", label: "กระบวนการผลิต" },
             ] as const).map((tab) => (
               <button
@@ -525,7 +525,9 @@ export default function IdeaByIdoPage() {
           {/* Contact Cards */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px", marginBottom: "2.5rem" }}>
             {[
-              { icon: <LineIcon />, label: "Line Official",   value: "@ideabyido",           href: "https://line.me/ti/p/ideabyido" },
+              { icon: <LineIcon />, label: "Line Official", value: "@ideabyido", href: "https://line.me/ti/p/ideabyido" },
+              { icon: <PhoneIcon />, label: "โทรศัพท์ (เก๋)", value: "064-424-1519", href: "tel:0644241519" },
+              { icon: <PhoneIcon />, label: "โทรศัพท์ (อู๋)", value: "093-879-6965", href: "tel:0938796965" },
             ].map((contact) => (
               <a
                 key={contact.label}
@@ -597,7 +599,7 @@ function ProjectCard({ project }: { project: UniformProject }) {
           )}
           {project.featured && (
             <div style={{ position: "absolute", top: "12px", right: "12px", background: "linear-gradient(135deg, #c9a84c, #f0d080)", color: "#0a0f1e", borderRadius: "100px", padding: "3px 10px", fontSize: "11px", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px" }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
               Featured
             </div>
           )}

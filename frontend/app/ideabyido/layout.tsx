@@ -138,8 +138,7 @@ export default function IdeaByIdoLayout({ children }: { children: React.ReactNod
                 ติดต่อ
               </div>
               <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", marginBottom: "6px" }}>Line: @ideabyido</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", marginBottom: "6px" }}>Tel: 02-XXX-XXXX</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Email: factory@ideabyido.com</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", marginBottom: "6px" }}>Tel: 0644241519</div>
             </div>
           </div>
         </div>
