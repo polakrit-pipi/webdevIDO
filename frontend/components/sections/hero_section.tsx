@@ -61,6 +61,7 @@ export default function Hero_section() {
         overflow: "hidden",
         opacity: visible ? 1 : 0,
         transition: "opacity 0.7s ease",
+        paddingTop: "clamp(64px, 7vw, 112px)", /* offset fixed navbar */
       }}
     >
       {/* ─── Row on desktop, Column on mobile ── */}
@@ -121,7 +122,7 @@ export default function Hero_section() {
           }}>
             {/* แฟชั่น & ไลฟ์สไตล์ */}
             <p style={{
-              fontSize: "clamp(0.8rem, 2.5vw, 1.1rem)",
+              fontSize: "clamp(1rem, 3.5vw, 1.1rem)",
               fontWeight: 900,
               letterSpacing: "0.12em",
               textTransform: "uppercase",

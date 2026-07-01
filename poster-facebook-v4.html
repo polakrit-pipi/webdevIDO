@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IDO — Poster</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700;800;900&family=Inter:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Inter', 'Noto Sans Thai', sans-serif;
+    }
+
+    .poster {
+      width: 1080px;
+      height: 1080px;
+      background: #0c0c0c;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── COLOUR ACCENT TOP ── */
+    .accent-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc, #7c3aed);
+      background-size: 200% 100%;
+      z-index: 20;
+    }
+
+    /* ── BACKGROUND SHAPES ── */
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .bg-circle-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%);
+      top: -200px; right: -200px;
+    }
+    .bg-circle-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 70%);
+      bottom: -150px; left: -100px;
+    }
+
+    /* Fine dot pattern */
+    .bg-dots {
+      position: absolute; inset: 0; z-index: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      position: relative; z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 52px 64px 0;
+      flex-shrink: 0;
+    }
+
+    .logo-wrap { display: flex; flex-direction: column; gap: 2px; }
+
+    .logo-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 5px;
+      text-transform: uppercase;
+    }
+
+    .logo-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .logo-name span {
+      color: #a855f7;
+    }
+
+    .tag {
+      border: 1px solid rgba(168,85,247,0.5);
+      color: #c084fc;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 7px 18px;
+      border-radius: 3px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 10;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 64px;
+    }
+
+    .overline {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #a855f7;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .overline::before {
+      content: '';
+      width: 40px; height: 1px;
+      background: #a855f7;
+      display: block;
+    }
+
+    .headline-en {
+      font-family: 'Inter', sans-serif;
+      font-size: 108px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 0.88;
+      letter-spacing: -5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .headline-en .ghost {
+      -webkit-text-stroke: 1.5px rgba(255,255,255,0.2);
+      color: transparent;
+    }
+
+    .headline-th {
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-size: 48px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: -1px;
+      margin-bottom: 40px;
+    }
+
+    /* ── DIVIDER ── */
+    .rule {
+      position: relative; z-index: 10;
+      flex-shrink: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4) 20%, rgba(168,85,247,0.4) 80%, transparent);
+      margin: 0 64px;
+    }
+
+    /* ── SERVICES ── */
+    .services {
+      position: relative; z-index: 10;
+      flex-shrink: 0;
+      display: flex;
+      gap: 0;
+      padding: 0 64px;
+      margin-top: 36px;
+      margin-bottom: 40px;
+    }
+
+    .svc {
+      flex: 1;
+      padding: 0 0 0 24px;
+      border-left: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .svc:first-child { padding-left: 0; border-left: none; }
+
+    .svc-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      color: #a855f7;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .svc-title {
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .svc-desc {
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER ROW ── */
+    .foot {
+      position: relative; z-index: 10;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 64px 48px;
+    }
+
+    .foot-url {
+      font-family: 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .foot-url .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #a855f7;
+      display: inline-block;
+    }
+
+    .foot-social {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .foot-social span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .foot-social .social-line {
+      width: 1px; height: 14px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* corner number */
+    .corner-num {
+      position: absolute;
+      bottom: 48px; right: 64px;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.12);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+<div class="poster">
+
+  <div class="accent-bar"></div>
+  <div class="bg-circle bg-circle-1"></div>
+  <div class="bg-circle bg-circle-2"></div>
+  <div class="bg-dots"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-wrap">
+      <span class="logo-eyebrow">idea by</span>
+      <span class="logo-name">ID<span>O</span></span>
+    </div>
+    <div class="tag">Now Live</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="overline">มีเว็บไซต์แล้ว</div>
+
+    <div class="headline-en">
+      SHOP<br>
+      <span class="ghost">ONLINE</span>
+    </div>
+    <div class="headline-th">ได้แล้ววันนี้</div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="rule"></div>
+
+  <!-- SERVICES -->
+  <div class="services">
+    <div class="svc">
+      <div class="svc-label">01</div>
+      <div class="svc-title">เสื้อผ้าแฟชั่น</div>
+      <div class="svc-desc">เลือกซื้อ สั่งตรง<br>จัดส่งถึงบ้าน</div>
+    </div>
+    <div class="svc">
+      <div class="svc-label">02</div>
+      <div class="svc-title">ยูนิฟอร์มองค์กร</div>
+      <div class="svc-desc">ออกแบบและสั่งผลิต<br>ตามความต้องการ</div>
+    </div>
+    <div class="svc">
+      <div class="svc-label">03</div>
+      <div class="svc-title">Made in Thailand</div>
+      <div class="svc-desc">วัสดุคุณภาพ<br>ฝีมือคนไทย</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <div class="foot-url">
+      <span class="dot"></span>
+      ideabyido.com
+    </div>
+    <div class="foot-social">
+      <span>Facebook : ideabyido</span>
+      <span class="social-line"></span>
+      <span>Line : @ideabyido</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
