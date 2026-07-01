@@ -122,7 +122,7 @@ export default function Hero_section() {
           }}>
             {/* แฟชั่น & ไลฟ์สไตล์ */}
             <p style={{
-              fontSize: "clamp(1rem, 3.5vw, 1.1rem)",
+              fontSize: "clamp(1.6rem, 5vw, 2.8rem)",
               fontWeight: 900,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
@@ -130,7 +130,7 @@ export default function Hero_section() {
               marginBottom: "0.5rem",
               lineHeight: 1.4,
             }}>
-              <ColorfulText text="แฟชั่น & ไลฟ์สไตล์" />
+              <ColorfulText text="FASHION & LIFESTYLE" />
             </p>
 
             {/* Heading */}
